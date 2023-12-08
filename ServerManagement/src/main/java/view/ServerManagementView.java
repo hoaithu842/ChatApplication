@@ -1,6 +1,11 @@
 package view;
 
+import model.ConnectionManager;
+import model.ConnectionInformation;
+import model.ClientManager;
+import model.ClientInformation;
 import java.awt.event.ActionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -13,6 +18,7 @@ public class ServerManagementView extends javax.swing.JFrame {
      */
     public ServerManagementView() {
         initComponents();
+//        connectionTree.setCellRenderer();
     }
 
     /**
@@ -30,14 +36,14 @@ public class ServerManagementView extends javax.swing.JFrame {
         ipLabel = new javax.swing.JLabel();
         startServerButton = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        connectionManagerTree = new javax.swing.JTree();
+        connectionTree = new javax.swing.JTree();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Server Management - 21127176 - 21KTPM1");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMaximumSize(new java.awt.Dimension(400, 600));
         setMinimumSize(new java.awt.Dimension(400, 600));
         setName("MainFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(400, 600));
         setResizable(false);
 
         portLabel.setText("Port");
@@ -55,7 +61,9 @@ public class ServerManagementView extends javax.swing.JFrame {
 
         startServerButton.setText("Start Server");
 
-        jScrollPane1.setViewportView(connectionManagerTree);
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        connectionTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jScrollPane1.setViewportView(connectionTree);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -100,7 +108,7 @@ public class ServerManagementView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTree connectionManagerTree;
+    private javax.swing.JTree connectionTree;
     private javax.swing.JLabel ipLabel;
     private javax.swing.JTextField ipTextField;
     private javax.swing.JScrollPane jScrollPane1;
@@ -109,6 +117,24 @@ public class ServerManagementView extends javax.swing.JFrame {
     private javax.swing.JToggleButton startServerButton;
     // End of variables declaration//GEN-END:variables
 
+    // Setters
+    public void reloadConnectionTree(ConnectionManager connManager) {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
+        
+        for (ConnectionInformation connInfo : connManager.getConnectionInformationList()) {
+            DefaultMutableTreeNode connInfoNode = new DefaultMutableTreeNode(connInfo.getPort());
+            
+            ClientManager clientManager = connInfo.getClientManager();
+            for (ClientInformation clientInfo : clientManager.getClientInformationList()) {
+                connInfoNode.add(new DefaultMutableTreeNode(clientInfo.getName()));
+            }
+            root.add(connInfoNode);
+        }
+        
+        connectionTree.setModel(new javax.swing.tree.DefaultTreeModel(root));
+        connectionTree.setRootVisible(false);
+        
+    }
     // Getters
     public javax.swing.JTextField getPortTextField() {
         return portTextField;

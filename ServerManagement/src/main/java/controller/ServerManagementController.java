@@ -20,13 +20,28 @@ public class ServerManagementController {
         this.theView.addStartServerButtonListener(new StartServerButtonListener());
     }
     
+    public void reloadConnectionTree() {
+        theView.reloadConnectionTree(theModel.getConnManager());
+    }
+    
     class StartServerButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-//            theView.getPortTextField().setText("Hello");
-            int port = Integer.parseInt(theView.getPortTextField().getText());
+            int port;
+            
+            try {
+                port = Integer.parseInt(theView.getPortTextField().getText());
+            } catch(NumberFormatException e) {
+                System.out.println("Error message!");
+                return;
+            }
+            
             if (theModel.createConnection(port)) {
                 theView.getPortTextField().setText("created successfully!");
+//                count++;
+//                if (count == 2) {
+//                    theView.reloadConnectionTree(theModel.getConnManager());
+//                }
             } else {
                 theView.getPortTextField().setText("created unccessfully!");
             }

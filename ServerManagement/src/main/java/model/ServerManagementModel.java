@@ -1,74 +1,95 @@
 package model;
 
+import controller.ServerManagementController;
 import java.io.*;
 import java.net.ServerSocket;
-import java.util.ArrayList;
+import java.net.Socket;
 
 /**
  *
  * @author hoaithu842
  */
 public class ServerManagementModel {
-    static ConnectionManager connManager;
+    static private ConnectionManager connManager;
+    ServerManagementController theController;
     
     public ServerManagementModel() {
         connManager = new ConnectionManager();
     }
     
-    class ConnectionManager {
-        ArrayList<ConnectionInformation> connList;
-        ConnectionManager() {
-            connList = new ArrayList<>();
-        }
-        boolean connectionExists(int port) {
-            for (ConnectionInformation connInfo : connList) {
-                if (connInfo.portEquals(port)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        void addConnectionInformation(ConnectionInformation connInfo) {
-            connList.add(connInfo);
-        }
+    public void setController(ServerManagementController theController) {
+        this.theController = theController;
     }
     
-    class ConnectionInformation {
-        ServerSocket ss;
-        private int port;
-        ClientManager clientManager;
-        
-        ConnectionInformation(ServerSocket ss, ClientManager clientManager, int port) {
-            this.ss = ss;
-            this.clientManager = clientManager;
-            this.port = port;
-        }
-        boolean portEquals(int port) {
-            return this.port == port;
-        }
+    public ConnectionManager getConnManager() {
+        return connManager;
     }
     
-    class ClientManager {
-        ClientManager() {
-            
-        }
-    }
-    
-    class ClientInformation {
-        ClientInformation() {
-            
-        }
-    }
     
     class ConnectingThread extends Thread {
+        ConnectionInformation connInfo;
+        ConnectingThread(ConnectionInformation connInfo) {
+            this.connInfo = connInfo;
+        }
+        @Override
         public void run() {
-            
+            try {  
+                do {
+                    Socket socket = connInfo.ss.accept(); //synchronous
+
+                    InputStream is = socket.getInputStream();
+                    BufferedReader br=new BufferedReader(new InputStreamReader(is));
+                    
+                    OutputStream os = socket.getOutputStream();
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+                    
+                    String name = br.readLine();
+                    System.out.println("Client " + name + " connected!");
+                
+                    ClientInformation clientInfo = new ClientInformation(br, bw, socket, name);
+                    connInfo.addClientInformation(clientInfo);
+                    
+                    TalkingThread tt = new TalkingThread(clientInfo);
+                    tt.start();
+                    theController.reloadConnectionTree();
+                // bw.close();
+                // br.close();
+                } while (true);
+            } catch(IOException e) {
+                System.out.println("There're some error");
+            }
         }
     }
     
     class TalkingThread extends Thread {
+        ClientInformation clientInfo;
+        ClientManager clientManager;
+        TalkingThread(ClientInformation clientInfo) {
+//            this.clientManager = clientManager;
+            this.clientInfo = clientInfo;
+        }
+        @Override
         public void run() {
-            
+            do {
+                String receivedMessage = "";
+                do {
+                    try {
+                        receivedMessage=clientInfo.br.readLine();
+                    } catch (IOException ex) {
+                        System.out.println("Some error occured!");
+                        // Bao la user da bi mat ket noi
+                        return;
+                    }
+                    System.out.println("Received from " + clientInfo.name + ": " + receivedMessage);
+                    if (receivedMessage.equalsIgnoreCase("quit")) {
+                        System.out.println("Client has left !");
+                        break;
+                    }
+                } while (true);
+                // tt_ci.bw.close();
+                // tt_ci.br.close();
+            } while (true);
+//            System.out.println("Exiting child thread.");
         }
     }
     
@@ -82,11 +103,10 @@ public class ServerManagementModel {
             
             ConnectionInformation connInfo = new ConnectionInformation(ss, clientManager, port);
             connManager.addConnectionInformation(connInfo);
-            
-            
-//            cm.addConnectionInformation(ci, manager);
-//            ConnectingThread ct = new ConnectingThread(ci, cm);
-//            ct.start();
+                        
+            ConnectingThread ct = new ConnectingThread(connInfo);
+            ct.start();
+            theController.reloadConnectionTree();
             return true;
         } catch (IOException e) {
             System.out.println("There're some error");

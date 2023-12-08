@@ -12,6 +12,7 @@ public class ServerManagement {
         ServerManagementModel theModel = new ServerManagementModel();
         ServerManagementView theView = new ServerManagementView();
         ServerManagementController theController = new ServerManagementController(theView, theModel);
+        theModel.setController(theController);
         theView.setVisible(true);
     }
 }
