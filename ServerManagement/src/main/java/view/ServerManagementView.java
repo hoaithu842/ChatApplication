@@ -18,6 +18,7 @@ public class ServerManagementView extends javax.swing.JFrame {
      */
     public ServerManagementView() {
         initComponents();
+        connectionTree.setRootVisible(false);
 //        connectionTree.setCellRenderer();
     }
 
@@ -43,7 +44,7 @@ public class ServerManagementView extends javax.swing.JFrame {
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMaximumSize(new java.awt.Dimension(400, 600));
         setMinimumSize(new java.awt.Dimension(400, 600));
-        setName("MainFrame"); // NOI18N
+        setName("ServerManagementFrame"); // NOI18N
         setResizable(false);
 
         portLabel.setText("Port");

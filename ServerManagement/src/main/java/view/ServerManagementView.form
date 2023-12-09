@@ -13,7 +13,7 @@
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[400, 600]"/>
     </Property>
-    <Property name="name" type="java.lang.String" value="MainFrame" noResource="true"/>
+    <Property name="name" type="java.lang.String" value="ServerManagementFrame" noResource="true"/>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
