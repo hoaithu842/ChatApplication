@@ -12,6 +12,5 @@ public class AppChat {
         AppChatModel theModel = new AppChatModel();
         AppChatView theView = new AppChatView();
         AppChatController theController = new AppChatController(theView, theModel);
-        theView.setVisible(true);
     }
 }
