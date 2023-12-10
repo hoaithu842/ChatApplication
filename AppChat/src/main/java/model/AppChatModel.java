@@ -8,4 +8,7 @@ public class AppChatModel {
     public AppChatModel() {
         
     }
+    public boolean checkLogIn(String username, String password) {
+        return false;
+    }
 }

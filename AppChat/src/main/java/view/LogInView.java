@@ -203,6 +203,17 @@ public class LogInView extends javax.swing.JFrame {
     private javax.swing.JTextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 
+    // Getters
+    public String getUsername() {
+        return usernameTextField.getText();
+    }
+    public String getPassword() {
+        return passwordPasswordField.getText();
+    }
+    // Setter
+    public void displayMessage(String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message);
+    }
     // Event Handler
     public void addLogInButtonListener(ActionListener listenForClick) {
         logInButton.addActionListener(listenForClick);

@@ -33,22 +33,36 @@ public class AppChatController {
         this.theSignUpView.addSignUpButtonListener(new SignUpButtonListenerForSignUp());
     }
     
+    // Methods for SignUp/LogIn
     void forceLogIn() {
+        theSignUpView.setVisible(false);
         theLogInView.setVisible(true);
     }
+    
+    void forceSignUp() {
+        theLogInView.setVisible(false);
+        theSignUpView.setVisible(true);
+    } 
     
     // Event Handler for theLogInView
     class LogInButtonListenerForLogIn implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            int temp = 2 + 3;
+            String username = theLogInView.getUsername();
+            String password = theLogInView.getPassword();
+            
+            if (theModel.checkLogIn(username, password)) {
+                // JoinServerView
+//                int temp = 2 + 3;
+            } else {
+                theLogInView.displayMessage("Login Failed!");
+            }
         }
     }
     class SignUpButtonListenerForLogIn implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            theLogInView.setVisible(false);
-            theSignUpView.setVisible(true);
+            forceSignUp();
        }
     }
     
@@ -56,13 +70,14 @@ public class AppChatController {
     class LogInButtonListenerForSignUp implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            theSignUpView.setVisible(false);
-            theLogInView.setVisible(true);
+            forceLogIn();
         }
     }
     class SignUpButtonListenerForSignUp implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            int temp = 2 + 3;
+            //Check duplicated
+            //Check reenter -> Passwords do not match!
+            //Succeed -> forceLogin()
         }
     }
 }
