@@ -46,7 +46,6 @@ public class SignUpView extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(700, 500));
         setMinimumSize(new java.awt.Dimension(700, 500));
         setName("SignUpFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(700, 500));
         setResizable(false);
 
         appInfoPanel.setBackground(new java.awt.Color(0, 102, 102));
@@ -216,7 +215,26 @@ public class SignUpView extends javax.swing.JFrame {
     private javax.swing.JTextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 
-    // Event Handler
+    // Getters
+    public String getUsername() {
+        return usernameTextField.getText();
+    }
+    public String getPassword() {
+        return passwordPasswordField.getText();
+    }
+    public String getReenterPassword() {
+        return reenterPasswordPasswordField.getText();
+    }
+    // Setters
+    public void displayMessage(String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message);
+    }
+    public void refreshView() {
+        usernameTextField.setText("");
+        passwordPasswordField.setText("");
+        reenterPasswordPasswordField.setText("");
+    }
+    // Event Handlers
     public void addSignUpButtonListener(ActionListener listenForClick) {
         signUpButton.addActionListener(listenForClick);
     }

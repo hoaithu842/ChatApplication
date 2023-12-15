@@ -1,11 +1,12 @@
+controller\ServerManagementController$StartServerButtonListener.class
+model\ClientInformation.class
+model\ServerManagementModel$ConnectingThread.class
+view\ServerManagementView.class
+model\MessageModel.class
 model\ConnectionInformation.class
 model\ConnectionManager.class
-controller\ServerManagementController$StartServerButtonListener.class
 model\ServerManagementModel.class
 model\ClientManager.class
-model\ClientInformation.class
 ServerManagement.class
-model\ServerManagementModel$ConnectingThread.class
 controller\ServerManagementController.class
 model\ServerManagementModel$TalkingThread.class
-view\ServerManagementView.class

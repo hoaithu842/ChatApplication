@@ -24,6 +24,10 @@ public class ServerManagementController {
         theView.reloadConnectionTree(theModel.getConnManager());
     }
     
+    public void displayMessage(String message) {
+        theView.displayMessage(message);
+    }
+    
     class StartServerButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
@@ -36,15 +40,7 @@ public class ServerManagementController {
                 return;
             }
             
-            if (theModel.createConnection(port)) {
-                theView.getPortTextField().setText("created successfully!");
-//                count++;
-//                if (count == 2) {
-//                    theView.reloadConnectionTree(theModel.getConnManager());
-//                }
-            } else {
-                theView.getPortTextField().setText("created unccessfully!");
-            }
+            theModel.createConnection(port);
         }
     }
 }

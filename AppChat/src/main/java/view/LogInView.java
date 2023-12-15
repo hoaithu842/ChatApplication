@@ -44,7 +44,6 @@ public class LogInView extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(700, 500));
         setMinimumSize(new java.awt.Dimension(700, 500));
         setName("LogInFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(0, 0));
         setResizable(false);
 
         appInfoPanel.setBackground(new java.awt.Color(0, 102, 102));
@@ -210,11 +209,15 @@ public class LogInView extends javax.swing.JFrame {
     public String getPassword() {
         return passwordPasswordField.getText();
     }
-    // Setter
+    // Setters
     public void displayMessage(String message) {
         javax.swing.JOptionPane.showMessageDialog(this, message);
     }
-    // Event Handler
+    public void refreshView() {
+        usernameTextField.setText("");
+        passwordPasswordField.setText("");
+    }
+    // Event Handlers
     public void addLogInButtonListener(ActionListener listenForClick) {
         logInButton.addActionListener(listenForClick);
     }

@@ -1,5 +1,12 @@
 package view;
 
+import view.component.UserItem;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import view.component.MessageItem;
+
 /**
  *
  * @author hoaithu842
@@ -11,6 +18,7 @@ public class AppChatView extends javax.swing.JFrame {
      */
     public AppChatView() {
         initComponents();
+        addEventHandlers();
     }
 
     /**
@@ -23,33 +31,289 @@ public class AppChatView extends javax.swing.JFrame {
     private void initComponents() {
 
         infoPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        userInfoPanel = new javax.swing.JPanel();
+        usernameLabel = new javax.swing.JLabel();
+        menuPanel = new javax.swing.JPanel();
+        showChatsButton = new javax.swing.JButton();
+        showGroupsButton = new javax.swing.JButton();
+        showUsersButton = new javax.swing.JButton();
+        menuLayeredPane = new javax.swing.JLayeredPane();
+        chatsPanel = new javax.swing.JPanel();
+        showChatsScrollPane = new javax.swing.JScrollPane();
+        showChatsPanel = new javax.swing.JPanel();
+        groupsPanel = new javax.swing.JPanel();
+        showGroupsScrollPane = new javax.swing.JScrollPane();
+        showGroupsPanel = new javax.swing.JPanel();
+        usersPanel = new javax.swing.JPanel();
+        showUsersScrollPane = new javax.swing.JScrollPane();
+        showUsersPanel = new javax.swing.JPanel();
+        chatPanel = new javax.swing.JPanel();
+        toWhomLabel = new javax.swing.JLabel();
+        inputBoxPanel = new javax.swing.JPanel();
+        showMessageScrollPane = new javax.swing.JScrollPane();
+        showChatPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("App Chat - 21127176 - 21KTPM1");
         setMaximumSize(new java.awt.Dimension(1000, 600));
         setMinimumSize(new java.awt.Dimension(1000, 600));
         setName("AppChatFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(1000, 600));
         setResizable(false);
 
-        infoPanel.setMaximumSize(new java.awt.Dimension(250, 700));
-        infoPanel.setMinimumSize(new java.awt.Dimension(250, 700));
+        infoPanel.setMaximumSize(new java.awt.Dimension(250, 600));
+        infoPanel.setMinimumSize(new java.awt.Dimension(250, 600));
+        infoPanel.setPreferredSize(new java.awt.Dimension(250, 600));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
-        jLabel1.setText("@username");
+        userInfoPanel.setBackground(new java.awt.Color(0, 102, 102));
+        userInfoPanel.setMaximumSize(new java.awt.Dimension(250, 50));
+        userInfoPanel.setMinimumSize(new java.awt.Dimension(250, 50));
+
+        usernameLabel.setBackground(new java.awt.Color(0, 102, 102));
+        usernameLabel.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
+        usernameLabel.setText("@username");
+        usernameLabel.setMaximumSize(new java.awt.Dimension(250, 50));
+        usernameLabel.setMinimumSize(new java.awt.Dimension(250, 50));
+        usernameLabel.setPreferredSize(new java.awt.Dimension(250, 50));
+
+        javax.swing.GroupLayout userInfoPanelLayout = new javax.swing.GroupLayout(userInfoPanel);
+        userInfoPanel.setLayout(userInfoPanelLayout);
+        userInfoPanelLayout.setHorizontalGroup(
+            userInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        userInfoPanelLayout.setVerticalGroup(
+            userInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(usernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        showChatsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/user-chat.png"))); // NOI18N
+        showChatsButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        showChatsButton.setMaximumSize(new java.awt.Dimension(32, 32));
+        showChatsButton.setMinimumSize(new java.awt.Dimension(32, 32));
+        showChatsButton.setPreferredSize(new java.awt.Dimension(32, 32));
+
+        showGroupsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/group-chat.png"))); // NOI18N
+        showGroupsButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        showGroupsButton.setMaximumSize(new java.awt.Dimension(32, 32));
+        showGroupsButton.setMinimumSize(new java.awt.Dimension(32, 32));
+        showGroupsButton.setPreferredSize(new java.awt.Dimension(32, 32));
+
+        showUsersButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/online-users.png"))); // NOI18N
+        showUsersButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        showUsersButton.setMaximumSize(new java.awt.Dimension(32, 32));
+        showUsersButton.setMinimumSize(new java.awt.Dimension(32, 32));
+        showUsersButton.setPreferredSize(new java.awt.Dimension(32, 32));
+
+        javax.swing.GroupLayout menuPanelLayout = new javax.swing.GroupLayout(menuPanel);
+        menuPanel.setLayout(menuPanelLayout);
+        menuPanelLayout.setHorizontalGroup(
+            menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menuPanelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(showChatsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(showGroupsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53)
+                .addComponent(showUsersButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
+        );
+        menuPanelLayout.setVerticalGroup(
+            menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(showUsersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(showGroupsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(showChatsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        menuLayeredPane.setMaximumSize(new java.awt.Dimension(250, 544));
+        menuLayeredPane.setMinimumSize(new java.awt.Dimension(250, 506));
+        menuLayeredPane.setPreferredSize(new java.awt.Dimension(250, 506));
+
+        showChatsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        showChatsScrollPane.setViewportView(showChatsPanel);
+
+        showChatsPanel.setLayout(new javax.swing.BoxLayout(showChatsPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        showChatsScrollPane.setViewportView(showChatsPanel);
+
+        javax.swing.GroupLayout chatsPanelLayout = new javax.swing.GroupLayout(chatsPanel);
+        chatsPanel.setLayout(chatsPanelLayout);
+        chatsPanelLayout.setHorizontalGroup(
+            chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 238, Short.MAX_VALUE)
+            .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(chatsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(showChatsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        chatsPanelLayout.setVerticalGroup(
+            chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 494, Short.MAX_VALUE)
+            .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(chatsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(showChatsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        showGroupsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        showGroupsScrollPane.setViewportView(showGroupsPanel);
+
+        showGroupsPanel.setLayout(new javax.swing.BoxLayout(showGroupsPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        showGroupsScrollPane.setViewportView(showGroupsPanel);
+
+        javax.swing.GroupLayout groupsPanelLayout = new javax.swing.GroupLayout(groupsPanel);
+        groupsPanel.setLayout(groupsPanelLayout);
+        groupsPanelLayout.setHorizontalGroup(
+            groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 238, Short.MAX_VALUE)
+            .addGroup(groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(groupsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(showGroupsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        groupsPanelLayout.setVerticalGroup(
+            groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 494, Short.MAX_VALUE)
+            .addGroup(groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(groupsPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(showGroupsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        showUsersScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        showUsersPanel.setLayout(new javax.swing.BoxLayout(showUsersPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        showUsersScrollPane.setViewportView(showUsersPanel);
+
+        javax.swing.GroupLayout usersPanelLayout = new javax.swing.GroupLayout(usersPanel);
+        usersPanel.setLayout(usersPanelLayout);
+        usersPanelLayout.setHorizontalGroup(
+            usersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(usersPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        usersPanelLayout.setVerticalGroup(
+            usersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(usersPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        menuLayeredPane.setLayer(chatsPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        menuLayeredPane.setLayer(groupsPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        menuLayeredPane.setLayer(usersPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout menuLayeredPaneLayout = new javax.swing.GroupLayout(menuLayeredPane);
+        menuLayeredPane.setLayout(menuLayeredPaneLayout);
+        menuLayeredPaneLayout.setHorizontalGroup(
+            menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(chatsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(groupsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(usersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        menuLayeredPaneLayout.setVerticalGroup(
+            menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 506, Short.MAX_VALUE)
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(chatsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(groupsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(menuLayeredPaneLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(usersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
 
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
         infoPanel.setLayout(infoPanelLayout);
         infoPanelLayout.setHorizontalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+            .addGroup(infoPanelLayout.createSequentialGroup()
+                .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(menuLayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(userInfoPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(menuPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         infoPanelLayout.setVerticalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoPanelLayout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 650, Short.MAX_VALUE))
+                .addComponent(userInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(menuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        toWhomLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        toWhomLabel.setText("@username");
+        toWhomLabel.setPreferredSize(new java.awt.Dimension(66, 50));
+
+        inputBoxPanel.setMaximumSize(new java.awt.Dimension(66, 50));
+        inputBoxPanel.setMinimumSize(new java.awt.Dimension(66, 50));
+        inputBoxPanel.setPreferredSize(new java.awt.Dimension(66, 50));
+
+        javax.swing.GroupLayout inputBoxPanelLayout = new javax.swing.GroupLayout(inputBoxPanel);
+        inputBoxPanel.setLayout(inputBoxPanelLayout);
+        inputBoxPanelLayout.setHorizontalGroup(
+            inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        inputBoxPanelLayout.setVerticalGroup(
+            inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 50, Short.MAX_VALUE)
+        );
+
+        showMessageScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        showMessageScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        showChatPanel.setLayout(new javax.swing.BoxLayout(showChatPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        showMessageScrollPane.setViewportView(showChatPanel);
+
+        javax.swing.GroupLayout chatPanelLayout = new javax.swing.GroupLayout(chatPanel);
+        chatPanel.setLayout(chatPanelLayout);
+        chatPanelLayout.setHorizontalGroup(
+            chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(toWhomLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(inputBoxPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE)
+            .addGroup(chatPanelLayout.createSequentialGroup()
+                .addComponent(showMessageScrollPane)
+                .addContainerGap())
+        );
+        chatPanelLayout.setVerticalGroup(
+            chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(chatPanelLayout.createSequentialGroup()
+                .addComponent(toWhomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showMessageScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(inputBoxPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -58,20 +322,189 @@ public class AppChatView extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 750, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chatPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(infoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(chatPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(infoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel chatPanel;
+    private javax.swing.JPanel chatsPanel;
+    private javax.swing.JPanel groupsPanel;
     private javax.swing.JPanel infoPanel;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel inputBoxPanel;
+    private javax.swing.JLayeredPane menuLayeredPane;
+    private javax.swing.JPanel menuPanel;
+    private javax.swing.JPanel showChatPanel;
+    private javax.swing.JButton showChatsButton;
+    private javax.swing.JPanel showChatsPanel;
+    private javax.swing.JScrollPane showChatsScrollPane;
+    private javax.swing.JButton showGroupsButton;
+    private javax.swing.JPanel showGroupsPanel;
+    private javax.swing.JScrollPane showGroupsScrollPane;
+    private javax.swing.JScrollPane showMessageScrollPane;
+    private javax.swing.JButton showUsersButton;
+    private javax.swing.JPanel showUsersPanel;
+    private javax.swing.JScrollPane showUsersScrollPane;
+    private javax.swing.JLabel toWhomLabel;
+    private javax.swing.JPanel userInfoPanel;
+    private javax.swing.JLabel usernameLabel;
+    private javax.swing.JPanel usersPanel;
     // End of variables declaration//GEN-END:variables
 
+    // Getters
+    public javax.swing.JLabel getUsernameLabel() {
+        return usernameLabel;
+    }
 
+    public javax.swing.JPanel getShowChatsPanel() {
+        return showChatsPanel;
+    }
+    public javax.swing.JPanel getShowGroupsPanel() {
+        return showGroupsPanel;
+    }
+    public javax.swing.JPanel getShowUsersPanel() {
+        return showUsersPanel;
+    }
+    
+    // Setters
+    public void prepareChats() { // truyen them data
+//        chatListLayeredPane.removeAll();
+//        for(int i=0; i<10; i++) {
+//            UserItem item = new UserItem("People " + i);
+//            item.setBounds(0, i*50, 250, 50);
+//            chatListLayeredPane.add(item, 0, i);
+//        }
+//        refreshChatList();
+        for (int i=0; i<20; i++) {
+            UserItem item = new UserItem("Chat " + i);
+            showChatsPanel.add(item, 0);
+//            item.setBounds(0, i*50, 250, 50);
+//            chatListLayeredPane.add(item, 0, i);
+        }
+//        showChatsPanel.remove(2);
+        showChatsPanel.revalidate();
+        showChatsPanel.repaint();
+    }
+    public void prepareGroups() {
+        for (int i = 0; i < 20; i++) {
+            UserItem item = new UserItem("Group " + i);
+            showGroupsPanel.add(item, 0);
+        }
+//        showGroupsPanel.remove(2);
+        showGroupsPanel.revalidate();
+        showGroupsPanel.repaint();
+    }
+    public void prepareUsers() {
+        for (int i = 0; i < 20; i++) {
+            UserItem item = new UserItem("User  " + i);
+            showUsersPanel.add(item, 0);
+        }
+    //        showGroupsPanel.remove(2);
+        showUsersPanel.revalidate();
+        showUsersPanel.repaint();
+
+        showUsersPanel.remove(2);
+    }
+//    public void showGroups() {
+//        chatListLayeredPane.removeAll();
+//        for(int i=0; i<10; i++) {
+//            UserItem item = new UserItem("Group " + i);
+//            item.setBounds(0, i*50, 250, 50);
+//            chatListLayeredPane.add(item, 0, i);
+//        }
+//        refreshChatList();
+//    }
+//    public void showUsers() {
+//        chatListLayeredPane.removeAll();
+//        for(int i=0; i<10; i++) {
+//            UserItem item = new UserItem("User " + i);
+//            item.setBounds(0, i*50, 250, 50);
+//            chatListLayeredPane.add(item, 0, i);
+//        }
+//        refreshChatList();
+//    }
+//    private void refreshChatList() {
+//        chatListLayeredPane.repaint();
+//        chatListLayeredPane.validate();
+//    }
+    private void showChat() {
+        MessageItem aMessage = new MessageItem("hoaithu842", "Hello");
+        aMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
+        showChatPanel.add(aMessage);
+        MessageItem bMessage = new MessageItem("hoaithuwz", "Hi");
+        bMessage.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        showChatPanel.add(bMessage);
+        MessageItem cMessage = new MessageItem("hoaithu842", "Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc??");
+        cMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
+        showChatPanel.add(cMessage);
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
+//        showChatPanel.add(new MessageItem("hoaithu842", "Oh Yay Scrollable ruiii"));
+//        
+
+//        if (received) {
+//            label.setHorizontalAlignment(SwingConstants.LEFT);
+//        } else {
+//            label.setHorizontalAlignment(SwingConstants.RIGHT);
+//        }
+//        panel.add(label);
+    }
+    
+    // Event Handlers
+    private void addEventHandlers() {
+        // ShowChatsButtonListener
+        showChatsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                groupsPanel.setVisible(false);
+                usersPanel.setVisible(false);
+                chatsPanel.setVisible(true);
+            }
+        });
+        
+        // ShowGroupsButtonListener
+        showGroupsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chatsPanel.setVisible(false);
+                usersPanel.setVisible(false);
+                groupsPanel.setVisible(true);
+            }
+        });
+        
+        // ShowUsersButtonListener
+        showUsersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chatsPanel.setVisible(false);
+                groupsPanel.setVisible(false);
+                usersPanel.setVisible(true);
+            }
+        });
+    }
+
+    public void addShowChatsPanelMouseListener(MouseListener listenForClick) {
+        showChatsPanel.addMouseListener(listenForClick);
+    }
+    public void addShowGroupsPanelMouseListener(MouseListener listenForClick) {
+        showGroupsPanel.addMouseListener(listenForClick);
+    }
+    public void addShowUsersPanelMouseListener(MouseListener listenForClick) {
+        showUsersPanel.addMouseListener(listenForClick);
+    }
 }

@@ -127,7 +127,7 @@ public class ServerManagementView extends javax.swing.JFrame {
             
             ClientManager clientManager = connInfo.getClientManager();
             for (ClientInformation clientInfo : clientManager.getClientInformationList()) {
-                connInfoNode.add(new DefaultMutableTreeNode(clientInfo.getName()));
+                connInfoNode.add(new DefaultMutableTreeNode(clientInfo.getUsername()));
             }
             root.add(connInfoNode);
         }
@@ -140,7 +140,11 @@ public class ServerManagementView extends javax.swing.JFrame {
     public javax.swing.JTextField getPortTextField() {
         return portTextField;
     }
-    // Event Handler
+    // Setters
+    public void displayMessage(String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message);
+    }
+    // Event Handlers
     public void addStartServerButtonListener(ActionListener listenForClick) {
         startServerButton.addActionListener(listenForClick);
     }
