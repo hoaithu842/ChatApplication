@@ -1,28 +1,24 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
  * @author hoaithu842
  */
 public class ConnectionManager {
-    private ArrayList<ConnectionInformation> connList;
+    private HashMap<Integer, ConnectionInformation> connList;
     ConnectionManager() {
-        connList = new ArrayList<>();
+        connList = new HashMap<>();
     }
     public ArrayList<ConnectionInformation> getConnectionInformationList() {
-        return connList;
+        return new ArrayList<>(connList.values());
     }
     boolean connectionExists(int port) {
-        for (ConnectionInformation connInfo : connList) {
-            if (connInfo.portEquals(port)) {
-                return true;
-            }
-        }
-        return false;
+        return connList.containsKey(port);
     }
     void addConnectionInformation(ConnectionInformation connInfo) {
-        connList.add(connInfo);
+        connList.put(connInfo.getPort(), connInfo);
     }
 }

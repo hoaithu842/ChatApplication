@@ -96,46 +96,7 @@ public class ServerManagementModel {
             }
         }
     }
-    
-    
-    
-    
-    
-    class ConnectingThread extends Thread {
-        ConnectionInformation connInfo;
-        ConnectingThread(ConnectionInformation connInfo) {
-            this.connInfo = connInfo;
-        }
-        @Override
-        public void run() {
-            try {  
-                do {
-                    Socket socket = connInfo.ss.accept(); //synchronous
-
-                    InputStream is = socket.getInputStream();
-                    BufferedReader br=new BufferedReader(new InputStreamReader(is));
-                    
-                    OutputStream os = socket.getOutputStream();
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-                    
-                    String name = br.readLine();
-//                    System.out.println("Client " + name + " connected!");
-                
-                    ClientInformation clientInfo = new ClientInformation(is, os, socket, name);
-                    connInfo.addClientInformation(clientInfo);
-                    theController.reloadConnectionTree();
-                    
-                    TalkingThread tt = new TalkingThread(clientInfo);
-                    tt.start();
-                // bw.close();
-                // br.close();
-                } while (true);
-            } catch(IOException e) {
-                System.out.println("There're some error");
-            }
-        }
-    }
-    
+    // Methods for server to talk to connected client
     class TalkingThread extends Thread {
         ClientInformation clientInfo;
         ClientManager clientManager;
@@ -169,7 +130,47 @@ public class ServerManagementModel {
 //            System.out.println("Exiting child thread.");
         }
     }
-    
+    // Methods for server to listen to client connection
+    class ConnectingThread extends Thread {
+        ConnectionInformation connInfo;
+        ConnectingThread(ConnectionInformation connInfo) {
+            this.connInfo = connInfo;
+        }
+        @Override
+        public void run() {
+            while (true) {
+                try (
+                        Socket socket = connInfo.ss.accept(); //synchronous
+                        BufferedReader br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                        ) {
+                    InputStream is = socket.getInputStream();
+                    OutputStream os = socket.getOutputStream();
+                    
+                    // receive username
+                    String username = br.readLine();
+                    ClientInformation clientInfo = new ClientInformation(is, os, socket, username);
+                    connInfo.addClientInformation(clientInfo);
+                    theController.reloadConnectionTree();
+                    
+                    // publish data to render UI
+                    ClientManager clientManager = connInfo.getClientManager();
+                    ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
+                    
+                    
+                    oos.writeObject(onlineUsers);
+                    oos.flush();
+//                    oos.close();
+                    
+//                    TalkingThread tt = new TalkingThread(clientInfo);
+//                    tt.start();
+                } catch (IOException e) {
+                    System.out.println("There's an error: " + e.getMessage());
+                }
+            }
+        }
+    }
+    // Methods to start server
     public void createConnection(int port) {
         if (connManager.connectionExists(port)) {
             theController.displayMessage("Already Started!");

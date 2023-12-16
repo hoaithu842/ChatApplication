@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import model.AppChatModel;
 import view.AppChatView;
 import view.JoinServerView;
@@ -32,17 +33,17 @@ public class AppChatController {
         this.theJoinServerView = new JoinServerView();
         
         addEventHandlers();
-        prepareUIComponents();
+//        prepareUIComponents();
         
         // Start flow
         forceLogIn();
         
     }
     
-    final void prepareUIComponents() {
+    public void prepareUIComponents(ArrayList<String> onlineUsers) {
         theView.prepareChats();
         theView.prepareGroups();
-        theView.prepareUsers();
+        theView.prepareUsers(onlineUsers);
     }
     
     // Methods for SignUp/LogIn

@@ -32,14 +32,12 @@ public class ServerManagementController {
         @Override
         public void actionPerformed(ActionEvent event) {
             int port;
-            
             try {
                 port = Integer.parseInt(theView.getPortTextField().getText());
             } catch(NumberFormatException e) {
                 System.out.println("Error message!");
                 return;
             }
-            
             theModel.createConnection(port);
         }
     }
