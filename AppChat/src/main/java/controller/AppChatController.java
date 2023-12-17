@@ -181,7 +181,7 @@ public class AppChatController {
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowUsersPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof UserItem userItem) {
-                System.out.println("You clicked on: " + userItem.getUsername());
+//                System.out.println("You clicked on: " + userItem.getUsername());
             }
         }
     }

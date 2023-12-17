@@ -1,11 +1,10 @@
 package view;
 
-import model.ConnectionManager;
-import model.ConnectionInformation;
 import model.ClientManager;
 import model.ClientInformation;
 import java.awt.event.ActionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import model.ServerManagementModel;
 
 /**
  *
@@ -119,18 +118,17 @@ public class ServerManagementView extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     // Setters
-    public void reloadConnectionTree(ConnectionManager connManager) {
+    public void reloadConnectionTree(ServerManagementModel theModel) {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
+        DefaultMutableTreeNode port = new DefaultMutableTreeNode(theModel.getPort());
         
-        for (ConnectionInformation connInfo : connManager.getConnectionInformationList()) {
-            DefaultMutableTreeNode connInfoNode = new DefaultMutableTreeNode(connInfo.getPort());
-            
-            ClientManager clientManager = connInfo.getClientManager();
-            for (ClientInformation clientInfo : clientManager.getClientInformationList()) {
-                connInfoNode.add(new DefaultMutableTreeNode(clientInfo.getUsername()));
-            }
-            root.add(connInfoNode);
+
+        ClientManager clientManager = theModel.getClientManager();
+        for (ClientInformation clientInfo : clientManager.getClientInformationList()) {
+            port.add(new DefaultMutableTreeNode(clientInfo.getUsername()));
         }
+        
+        root.add(port);
         
         connectionTree.setModel(new javax.swing.tree.DefaultTreeModel(root));
         connectionTree.setRootVisible(false);

@@ -69,8 +69,15 @@ public class AppChatModel {
         }
     }
     class TalkingThread extends Thread {
-        TalkingThread() {
-            
+        BufferedReader br;
+        BufferedWriter bw;
+        ObjectInputStream ois;
+        ObjectOutputStream oos;
+        TalkingThread(BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+            this.br = br;
+            this.bw = bw;
+            this.ois = ois;
+            this.oos = oos;
         }
         @Override
         public void run() {
@@ -83,7 +90,10 @@ public class AppChatModel {
         }
         try (
                 Socket socket = new Socket("localhost", port);
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         ){
             this.port = port;
             
@@ -95,7 +105,6 @@ public class AppChatModel {
             this.clientInfo = clientInfo;
             
             //  publish username to server
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
             bw.write(username);
             bw.newLine();
             bw.flush();
@@ -106,14 +115,14 @@ public class AppChatModel {
             theController.prepareUIComponents(onlineUsers);
             
 //            ois.close();
-            // start talkingthread
+
+            TalkingThread tt = new TalkingThread(br, bw, ois, oos);
+            tt.start();
+            
             return true;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
             return false;
         }
     }
-//    public getOnlineUsers() {
-//        
-//    }
 }

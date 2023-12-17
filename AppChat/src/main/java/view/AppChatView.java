@@ -51,6 +51,8 @@ public class AppChatView extends javax.swing.JFrame {
         chatPanel = new javax.swing.JPanel();
         toWhomLabel = new javax.swing.JLabel();
         inputBoxPanel = new javax.swing.JPanel();
+        typedMessageTextField = new javax.swing.JTextField();
+        sendMessageButton = new javax.swing.JButton();
         showMessageScrollPane = new javax.swing.JScrollPane();
         showChatPanel = new javax.swing.JPanel();
 
@@ -80,7 +82,7 @@ public class AppChatView extends javax.swing.JFrame {
         userInfoPanel.setLayout(userInfoPanelLayout);
         userInfoPanelLayout.setHorizontalGroup(
             userInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         userInfoPanelLayout.setVerticalGroup(
             userInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,16 +141,16 @@ public class AppChatView extends javax.swing.JFrame {
         chatsPanel.setLayout(chatsPanelLayout);
         chatsPanelLayout.setHorizontalGroup(
             chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 250, Short.MAX_VALUE)
+            .addGap(0, 238, Short.MAX_VALUE)
             .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(chatsPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(showChatsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                    .addComponent(showChatsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         chatsPanelLayout.setVerticalGroup(
             chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 506, Short.MAX_VALUE)
+            .addGap(0, 488, Short.MAX_VALUE)
             .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(chatsPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -167,15 +169,16 @@ public class AppChatView extends javax.swing.JFrame {
         groupsPanel.setLayout(groupsPanelLayout);
         groupsPanelLayout.setHorizontalGroup(
             groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 250, Short.MAX_VALUE)
+            .addGap(0, 238, Short.MAX_VALUE)
             .addGroup(groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, groupsPanelLayout.createSequentialGroup()
-                    .addComponent(showGroupsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                    .addContainerGap()
+                    .addComponent(showGroupsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         groupsPanelLayout.setVerticalGroup(
             groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 506, Short.MAX_VALUE)
+            .addGap(0, 488, Short.MAX_VALUE)
             .addGroup(groupsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(groupsPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -195,14 +198,14 @@ public class AppChatView extends javax.swing.JFrame {
             usersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(usersPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
                 .addContainerGap())
         );
         usersPanelLayout.setVerticalGroup(
             usersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(usersPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+                .addComponent(showUsersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -214,7 +217,7 @@ public class AppChatView extends javax.swing.JFrame {
         menuLayeredPane.setLayout(menuLayeredPaneLayout);
         menuLayeredPaneLayout.setHorizontalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 262, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(menuLayeredPaneLayout.createSequentialGroup()
                     .addContainerGap()
@@ -233,7 +236,7 @@ public class AppChatView extends javax.swing.JFrame {
         );
         menuLayeredPaneLayout.setVerticalGroup(
             menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 518, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(menuLayeredPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(menuLayeredPaneLayout.createSequentialGroup()
                     .addContainerGap()
@@ -257,12 +260,10 @@ public class AppChatView extends javax.swing.JFrame {
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoPanelLayout.createSequentialGroup()
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(menuPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(userInfoPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(menuLayeredPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(menuPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(userInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         infoPanelLayout.setVerticalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -271,7 +272,7 @@ public class AppChatView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(menuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(menuLayeredPane, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -283,15 +284,27 @@ public class AppChatView extends javax.swing.JFrame {
         inputBoxPanel.setMinimumSize(new java.awt.Dimension(66, 50));
         inputBoxPanel.setPreferredSize(new java.awt.Dimension(66, 50));
 
+        sendMessageButton.setText("Send");
+
         javax.swing.GroupLayout inputBoxPanelLayout = new javax.swing.GroupLayout(inputBoxPanel);
         inputBoxPanel.setLayout(inputBoxPanelLayout);
         inputBoxPanelLayout.setHorizontalGroup(
             inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(inputBoxPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(typedMessageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 210, Short.MAX_VALUE)
+                .addComponent(sendMessageButton)
+                .addContainerGap())
         );
         inputBoxPanelLayout.setVerticalGroup(
             inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGroup(inputBoxPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(typedMessageTextField)
+                    .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         showMessageScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -348,6 +361,7 @@ public class AppChatView extends javax.swing.JFrame {
     private javax.swing.JPanel inputBoxPanel;
     private javax.swing.JLayeredPane menuLayeredPane;
     private javax.swing.JPanel menuPanel;
+    private javax.swing.JButton sendMessageButton;
     private javax.swing.JPanel showChatPanel;
     private javax.swing.JButton showChatsButton;
     private javax.swing.JPanel showChatsPanel;
@@ -360,6 +374,7 @@ public class AppChatView extends javax.swing.JFrame {
     private javax.swing.JPanel showUsersPanel;
     private javax.swing.JScrollPane showUsersScrollPane;
     private javax.swing.JLabel toWhomLabel;
+    private javax.swing.JTextField typedMessageTextField;
     private javax.swing.JPanel userInfoPanel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JPanel usersPanel;

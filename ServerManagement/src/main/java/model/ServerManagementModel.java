@@ -14,17 +14,23 @@ import java.util.HashMap;
 public class ServerManagementModel {
     private HashMap<String, String> userPassword;
     final private int DEFAULT_PORT = 8080;
-    static private ConnectionManager connManager;
+    ServerSocket ss;
+    private int port;
+    ClientManager clientManager;
     ServerManagementController theController;
     
     public ServerManagementModel() {
         userPassword = new HashMap<>();
-        connManager = new ConnectionManager();
+        port = DEFAULT_PORT;
+        clientManager = new ClientManager();
         openPortToAuthorize();
     }
     // Getters
-    public ConnectionManager getConnManager() {
-        return connManager;
+    public ClientManager getClientManager() {
+        return clientManager;
+    }
+    public int getPort() {
+        return port;
     }
     // Setters
     public void setController(ServerManagementController theController) {
@@ -98,15 +104,19 @@ public class ServerManagementModel {
     }
     // Methods for server to talk to connected client
     class TalkingThread extends Thread {
-        ClientInformation clientInfo;
-        ClientManager clientManager;
-        TalkingThread(ClientInformation clientInfo) {
-//            this.clientManager = clientManager;
-            this.clientInfo = clientInfo;
+        BufferedReader br;
+        BufferedWriter bw;
+        ObjectInputStream ois;
+        ObjectOutputStream oos;
+        TalkingThread(BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+            this.br = br;
+            this.bw = bw;
+            this.ois = ois;
+            this.oos = oos;
         }
         @Override
         public void run() {
-            do {
+/*            do {
                 String receivedMessage = "";
                 do {
                     try {
@@ -128,21 +138,20 @@ public class ServerManagementModel {
                 // tt_ci.br.close();
             } while (true);
 //            System.out.println("Exiting child thread.");
+*/
         }
     }
     // Methods for server to listen to client connection
     class ConnectingThread extends Thread {
-        ConnectionInformation connInfo;
-        ConnectingThread(ConnectionInformation connInfo) {
-            this.connInfo = connInfo;
-        }
         @Override
         public void run() {
             while (true) {
                 try (
-                        Socket socket = connInfo.ss.accept(); //synchronous
-                        BufferedReader br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        Socket socket = ss.accept(); //synchronous
+                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                         ) {
                     InputStream is = socket.getInputStream();
                     OutputStream os = socket.getOutputStream();
@@ -150,20 +159,21 @@ public class ServerManagementModel {
                     // receive username
                     String username = br.readLine();
                     ClientInformation clientInfo = new ClientInformation(is, os, socket, username);
-                    connInfo.addClientInformation(clientInfo);
+                    clientManager.addClientInformation(clientInfo);
                     theController.reloadConnectionTree();
+                    theController.displayMessage("Client " + username + " connected!");
                     
                     // publish data to render UI
-                    ClientManager clientManager = connInfo.getClientManager();
                     ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
+                    onlineUsers.remove(username);
                     
                     
                     oos.writeObject(onlineUsers);
                     oos.flush();
 //                    oos.close();
                     
-//                    TalkingThread tt = new TalkingThread(clientInfo);
-//                    tt.start();
+                    TalkingThread tt = new TalkingThread(br, bw, ois, oos);
+                    tt.start();
                 } catch (IOException e) {
                     System.out.println("There's an error: " + e.getMessage());
                 }
@@ -172,18 +182,21 @@ public class ServerManagementModel {
     }
     // Methods to start server
     public void createConnection(int port) {
-        if (connManager.connectionExists(port)) {
-            theController.displayMessage("Already Started!");
+        if (port==DEFAULT_PORT) {
+            theController.displayMessage("Unavailable port!");
+            return;
+        }
+        if (this.port!=DEFAULT_PORT) {
+            theController.displayMessage("Server already started on port " + this.port + "!");
             return;
         }
         try{
             ServerSocket ss = new ServerSocket(port);
-            ClientManager clientManager = new ClientManager();
             
-            ConnectionInformation connInfo = new ConnectionInformation(ss, clientManager, port);
-            connManager.addConnectionInformation(connInfo);
+            this.ss = ss;
+            this.port = port;
                         
-            ConnectingThread ct = new ConnectingThread(connInfo);
+            ConnectingThread ct = new ConnectingThread();
             ct.start();
             
             theController.reloadConnectionTree();

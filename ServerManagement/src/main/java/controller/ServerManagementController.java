@@ -21,7 +21,7 @@ public class ServerManagementController {
     }
     
     public void reloadConnectionTree() {
-        theView.reloadConnectionTree(theModel.getConnManager());
+        theView.reloadConnectionTree(theModel);
     }
     
     public void displayMessage(String message) {
