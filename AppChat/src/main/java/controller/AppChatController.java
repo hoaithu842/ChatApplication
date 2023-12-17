@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import model.AppChatModel;
+import model.component.MessageModel;
 import view.AppChatView;
 import view.JoinServerView;
 import view.LogInView;
@@ -86,6 +87,8 @@ public class AppChatController {
         theView.addShowChatsPanelMouseListener(new ShowChatsPanelMouseListener());
         theView.addShowGroupsPanelMouseListener(new ShowGroupsPanelMouseListener());
         theView.addShowUsersPanelMouseListener(new ShowUsersPanelMouseListener());
+        
+        theView.addSendMessageButtonListener(new SendMessageButtonListener());
     }
     
     // Event Handlers for theLogInView
@@ -183,6 +186,16 @@ public class AppChatController {
             if (clickedComponent instanceof UserItem userItem) {
 //                System.out.println("You clicked on: " + userItem.getUsername());
             }
+        }
+    }
+    class SendMessageButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            String from = theModel.getUsername();
+            String to = theView.getToWhomLabel().getText();
+            String content = theView.getTypedMessageTextField().getText();
+            
+            MessageModel sendMsg = new MessageModel(from, to, content);
         }
     }
 }

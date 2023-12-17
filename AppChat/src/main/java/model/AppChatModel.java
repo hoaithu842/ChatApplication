@@ -81,7 +81,30 @@ public class AppChatModel {
         }
         @Override
         public void run() {
-            
+            while (true) {
+                try {
+                    // listen
+                    // receive code
+                    String code = br.readLine();
+                    
+                    switch (code) {
+                        case "CODE1":
+                            break;
+                        case "CODE2":
+                            break;
+                        default:
+                            break;
+                    }
+//                ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
+//                    onlineUsers.remove(username);
+//
+//                    
+//                    oos.writeObject(onlineUsers);
+//                    oos.flush();
+                } catch (IOException e) {
+                    System.out.println("There's an error: " + e.getMessage());
+                }
+            }
         }
     }
     public boolean checkServerPort(int port, String username) {

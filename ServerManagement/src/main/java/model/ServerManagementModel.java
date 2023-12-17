@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,6 +20,7 @@ public class ServerManagementModel {
     private int port;
     ClientManager clientManager;
     ServerManagementController theController;
+    TalkingThread tt;
     
     public ServerManagementModel() {
         userPassword = new HashMap<>();
@@ -116,6 +119,30 @@ public class ServerManagementModel {
         }
         @Override
         public void run() {
+            while (true) {
+                try {
+                    // listen
+                    // receive code
+                    String code = br.readLine();
+                    
+                    switch (code) {
+                        case "CODE1":
+                            break;
+                        case "CODE2":
+                            break;
+                        default:
+                            break;
+                    }
+//                ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
+//                    onlineUsers.remove(username);
+//
+//                    
+//                    oos.writeObject(onlineUsers);
+//                    oos.flush();
+                } catch (IOException e) {
+                    System.out.println("There's an error: " + e.getMessage());           
+                }
+            }
 /*            do {
                 String receivedMessage = "";
                 do {
@@ -172,7 +199,7 @@ public class ServerManagementModel {
                     oos.flush();
 //                    oos.close();
                     
-                    TalkingThread tt = new TalkingThread(br, bw, ois, oos);
+                    tt = new TalkingThread(br, bw, ois, oos);
                     tt.start();
                 } catch (IOException e) {
                     System.out.println("There's an error: " + e.getMessage());

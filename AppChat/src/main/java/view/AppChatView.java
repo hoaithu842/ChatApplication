@@ -395,6 +395,13 @@ public class AppChatView extends javax.swing.JFrame {
         return showUsersPanel;
     }
     
+    public javax.swing.JLabel getToWhomLabel() {
+        return toWhomLabel;
+    }
+    
+    public javax.swing.JTextField getTypedMessageTextField() {
+        return typedMessageTextField;
+    }
     // Setters
     public void prepareChats() { // truyen them data
 //        chatListLayeredPane.removeAll();
@@ -526,5 +533,9 @@ public class AppChatView extends javax.swing.JFrame {
     }
     public void addShowUsersPanelMouseListener(MouseListener listenForClick) {
         showUsersPanel.addMouseListener(listenForClick);
+    }
+    
+    public void addSendMessageButtonListener(ActionListener listenForClick) {
+        sendMessageButton.addActionListener(listenForClick);
     }
 }
