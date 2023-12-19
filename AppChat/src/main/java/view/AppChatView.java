@@ -1,11 +1,12 @@
 package view;
 
-import view.component.UserItem;
+import view.component.ChatItem;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import model.component.MessageModel;
 import view.component.MessageItem;
 
 /**
@@ -402,69 +403,36 @@ public class AppChatView extends javax.swing.JFrame {
     public javax.swing.JTextField getTypedMessageTextField() {
         return typedMessageTextField;
     }
+    
+    public boolean isShowGroupsOpening() {
+        return showGroupsPanel.isShowing();
+    }
     // Setters
     public void prepareChats() { // truyen them data
-//        chatListLayeredPane.removeAll();
-//        for(int i=0; i<10; i++) {
-//            UserItem item = new UserItem("People " + i);
-//            item.setBounds(0, i*50, 250, 50);
-//            chatListLayeredPane.add(item, 0, i);
-//        }
-//        refreshChatList();
         for (int i=0; i<20; i++) {
-            UserItem item = new UserItem("Chat " + i);
+            ChatItem item = new ChatItem("Chat " + i);
             showChatsPanel.add(item, 0);
-//            item.setBounds(0, i*50, 250, 50);
-//            chatListLayeredPane.add(item, 0, i);
         }
-//        showChatsPanel.remove(2);
         showChatsPanel.revalidate();
         showChatsPanel.repaint();
     }
     public void prepareGroups() {
         for (int i = 0; i < 20; i++) {
-            UserItem item = new UserItem("Group " + i);
+            ChatItem item = new ChatItem("Group " + i);
             showGroupsPanel.add(item, 0);
         }
-//        showGroupsPanel.remove(2);
         showGroupsPanel.revalidate();
         showGroupsPanel.repaint();
     }
     public void prepareUsers(ArrayList<String> onlineUsers) {
         for (String username : onlineUsers) {
-            showUsersPanel.add(new UserItem(username), 0);
+            showUsersPanel.add(new ChatItem(username), 0);
         }
-//        for (int i = 0; i < 20; i++) {
-//            UserItem item = new UserItem("User  " + i);
-//            showUsersPanel.add(item, 0);
-//        }
-    //        showGroupsPanel.remove(2);
         showUsersPanel.revalidate();
         showUsersPanel.repaint();
     }
-//    public void showGroups() {
-//        chatListLayeredPane.removeAll();
-//        for(int i=0; i<10; i++) {
-//            UserItem item = new UserItem("Group " + i);
-//            item.setBounds(0, i*50, 250, 50);
-//            chatListLayeredPane.add(item, 0, i);
-//        }
-//        refreshChatList();
-//    }
-//    public void showUsers() {
-//        chatListLayeredPane.removeAll();
-//        for(int i=0; i<10; i++) {
-//            UserItem item = new UserItem("User " + i);
-//            item.setBounds(0, i*50, 250, 50);
-//            chatListLayeredPane.add(item, 0, i);
-//        }
-//        refreshChatList();
-//    }
-//    private void refreshChatList() {
-//        chatListLayeredPane.repaint();
-//        chatListLayeredPane.validate();
-//    }
-    private void showChat() {
+
+    private void prepareChat() {
         MessageItem aMessage = new MessageItem("hoaithu842", "Hello");
         aMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
         showChatPanel.add(aMessage);
@@ -474,27 +442,22 @@ public class AppChatView extends javax.swing.JFrame {
         MessageItem cMessage = new MessageItem("hoaithu842", "Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc??");
         cMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
         showChatPanel.add(cMessage);
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Dm HCMUS"));
-//        showChatPanel.add(new MessageItem("hoaithu842", "Oh Yay Scrollable ruiii"));
-//        
-
-//        if (received) {
-//            label.setHorizontalAlignment(SwingConstants.LEFT);
-//        } else {
-//            label.setHorizontalAlignment(SwingConstants.RIGHT);
-//        }
-//        panel.add(label);
+    }
+    
+    public void updateChat(MessageModel msgModel) {
+        MessageItem newMsg = new MessageItem(msgModel.getFrom(), msgModel.getContent());
+        if (usernameLabel.getText().equals(msgModel.getFrom())) {
+            newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
+            showChatPanel.add(newMsg);
+        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+            newMsg.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            showChatPanel.add(newMsg);
+        }
     }
     
     // Event Handlers
     private void addEventHandlers() {
-        // ShowChatsButtonListener
+        // showChatsButtonListener
         showChatsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -504,7 +467,7 @@ public class AppChatView extends javax.swing.JFrame {
             }
         });
         
-        // ShowGroupsButtonListener
+        // showGroupsButtonListener
         showGroupsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -514,13 +477,14 @@ public class AppChatView extends javax.swing.JFrame {
             }
         });
         
-        // ShowUsersButtonListener
+        // showUsersButtonListener
         showUsersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chatsPanel.setVisible(false);
                 groupsPanel.setVisible(false);
                 usersPanel.setVisible(true);
+                // ycau reload
             }
         });
     }
@@ -538,4 +502,6 @@ public class AppChatView extends javax.swing.JFrame {
     public void addSendMessageButtonListener(ActionListener listenForClick) {
         sendMessageButton.addActionListener(listenForClick);
     }
+    
+    
 }

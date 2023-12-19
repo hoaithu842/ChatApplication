@@ -12,7 +12,7 @@ import view.AppChatView;
 import view.JoinServerView;
 import view.LogInView;
 import view.SignUpView;
-import view.component.UserItem;
+import view.component.ChatItem;
 
 /**
  *
@@ -68,6 +68,26 @@ public class AppChatController {
     void enterAppChat() {
         theJoinServerView.setVisible(false);
         theView.setVisible(true);
+    }
+    
+    public void updateChat(MessageModel msgModel) {
+        String from = msgModel.getFrom();
+        String to = msgModel.getTo();
+        String with = "";
+        if (theView.getUsernameLabel().getText().equals(from)) {
+            with = to;
+        } else if (theView.getUsernameLabel().getText().equals(to)) {
+            with = from;
+        }
+        theModel.updateChat(with, msgModel);
+        
+        if (theView.getUsernameLabel().getText().equals(from) && theView.getToWhomLabel().equals(to)){
+            theView.updateChat(msgModel);
+        }
+        
+        if (theView.getUsernameLabel().getText().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
+            theView.updateChat(msgModel);
+        }
     }
     
     // Event Handlers
@@ -165,8 +185,8 @@ public class AppChatController {
         @Override
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowChatsPanel().getComponentAt(event.getPoint());
-            if (clickedComponent instanceof UserItem userItem) {
-                System.out.println("You clicked on: " + userItem.getUsername());
+            if (clickedComponent instanceof ChatItem chatItem) {
+                theView.getToWhomLabel().setText(chatItem.getName());
             }
         }
     }
@@ -174,8 +194,8 @@ public class AppChatController {
         @Override
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowGroupsPanel().getComponentAt(event.getPoint());
-            if (clickedComponent instanceof UserItem userItem) {
-                System.out.println("You clicked on: " + userItem.getUsername());
+            if (clickedComponent instanceof ChatItem chatItem) {
+                theView.getToWhomLabel().setText(chatItem.getName());
             }
         }
     }
@@ -183,8 +203,8 @@ public class AppChatController {
         @Override
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowUsersPanel().getComponentAt(event.getPoint());
-            if (clickedComponent instanceof UserItem userItem) {
-//                System.out.println("You clicked on: " + userItem.getUsername());
+            if (clickedComponent instanceof ChatItem chatItem) {
+                theView.getToWhomLabel().setText(chatItem.getName());
             }
         }
     }
@@ -194,8 +214,14 @@ public class AppChatController {
             String from = theModel.getUsername();
             String to = theView.getToWhomLabel().getText();
             String content = theView.getTypedMessageTextField().getText();
+            theView.getTypedMessageTextField().setText("");
             
-            MessageModel sendMsg = new MessageModel(from, to, content);
+            MessageModel msgModel = new MessageModel(from, to, content);
+            if (theView.isShowGroupsOpening()) {
+                theModel.sendMessageGroupChat(msgModel);
+            } else {
+                theModel.sendMessagePrivateChat(msgModel);
+            }
         }
     }
 }

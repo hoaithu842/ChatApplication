@@ -6,24 +6,26 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import model.component.MessageModel;
 
 /**
  *
  * @author hoaithu842
  */
 public class ServerManagementModel {
-    private HashMap<String, String> userPassword;
+    private final HashMap<String, String> userPassword;
+    private final HashMap<String, ClientInformation> userInformation;
+    
     final private int DEFAULT_PORT = 8080;
-    ServerSocket ss;
     private int port;
     ClientManager clientManager;
     ServerManagementController theController;
-    TalkingThread tt;
     
+    final String PRIVATE_MESSAGE = "private_message";
     public ServerManagementModel() {
         userPassword = new HashMap<>();
+        userInformation = new HashMap<>();
+        
         port = DEFAULT_PORT;
         clientManager = new ClientManager();
         openPortToAuthorize();
@@ -36,14 +38,17 @@ public class ServerManagementModel {
         return port;
     }
     // Setters
+    public void refreshClientManager() {
+        clientManager = new ClientManager();
+    }
     public void setController(ServerManagementController theController) {
         this.theController = theController;
     }
     // Methods for authorization
-    void openPortToAuthorize() {
+    final void openPortToAuthorize() {
         try{
-            ServerSocket ss = new ServerSocket(DEFAULT_PORT);
-            AuthorizingThread at = new AuthorizingThread(ss);
+            ServerSocket serverSocket = new ServerSocket(DEFAULT_PORT);
+            AuthorizingThread at = new AuthorizingThread(serverSocket);
             at.start();            
         } catch (IOException e) {
             theController.displayMessage("There're some error!");
@@ -92,6 +97,7 @@ public class ServerManagementModel {
                                 sendMsg.add("false");
                             } else if (method.equals("signup")) {
                                 userPassword.put(username, password);
+                                userInformation.put(username, new ClientInformation(username));
                                 sendMsg.add("true");
                             }
                         }
@@ -102,16 +108,25 @@ public class ServerManagementModel {
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("There's an error: " + e.getMessage());
+            } finally {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    System.out.println("There's some error: " + e.getMessage());
+                }
             }
         }
     }
     // Methods for server to talk to connected client
     class TalkingThread extends Thread {
+        Socket socket;
         BufferedReader br;
         BufferedWriter bw;
         ObjectInputStream ois;
         ObjectOutputStream oos;
-        TalkingThread(BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+
+        TalkingThread(Socket socket, BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+            this.socket = socket;
             this.br = br;
             this.bw = bw;
             this.ois = ois;
@@ -121,89 +136,108 @@ public class ServerManagementModel {
         public void run() {
             while (true) {
                 try {
-                    // listen
-                    // receive code
-                    String code = br.readLine();
-                    
-                    switch (code) {
-                        case "CODE1":
-                            break;
-                        case "CODE2":
-                            break;
-                        default:
-                            break;
+                    if (socket.isClosed()) {
+                        System.out.println("Connection lost!");
+                        break;
                     }
-//                ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
-//                    onlineUsers.remove(username);
-//
-//                    
-//                    oos.writeObject(onlineUsers);
-//                    oos.flush();
-                } catch (IOException e) {
+                    String code = br.readLine();
+                    System.out.println("Receive code: " + code);
+                    switch (code) {
+                        case PRIVATE_MESSAGE -> {
+                            MessageModel msgModel = (MessageModel) ois.readObject();
+                            System.out.println("\t Content from " + msgModel.getFrom() + " to " + msgModel.getTo() + ": " + msgModel.getContent());
+                            this.sendPrivateMessage(msgModel);
+                        }
+                        case "CODE2" -> {
+                            continue;
+                        }
+                        default -> {
+                            continue;
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
                     System.out.println("There's an error: " + e.getMessage());           
                 }
             }
-/*            do {
-                String receivedMessage = "";
-                do {
-                    try {
-                        BufferedReader br=new BufferedReader(new InputStreamReader(clientInfo.is));
-                        receivedMessage=br.readLine();
-                    } catch (IOException ex) {
-                        System.out.println("Some error occured!");
-                        // Bao la user da bi mat ket noi, reload lai cai bang connection
-                        return;
+        }
+        public void sendPrivateMessage(MessageModel msgModel) {
+            try {
+                String from = msgModel.getFrom();
+                String to = msgModel.getTo();
+                if (userInformation.containsKey(to)) {
+                    // if receiver is a user - add to history
+                    System.out.println("Sending back to sender to render");
+                    synchronized (socket) {
+                        bw.write(PRIVATE_MESSAGE);
+                        bw.newLine();
+                        bw.flush();
+                        oos.writeObject(msgModel);
+                        oos.flush();
+                        
+                        userInformation.get(from).updateChat(to, msgModel);
+                        userInformation.get(to).updateChat(from, msgModel);
+
+                        if (clientManager.containsClient(to)) {
+                            // if is an online user - send and add to history
+                            System.out.println("Sending message to " + to);
+                            clientManager.bw(to).write(PRIVATE_MESSAGE);
+                            clientManager.bw(to).newLine();
+                            clientManager.bw(to).flush();
+                            clientManager.oos(to).writeObject(msgModel);
+                            clientManager.oos(to).flush();
+                        }
                     }
-                    System.out.println("Received from " + clientInfo.username + ": " + receivedMessage);
-                    if (receivedMessage.equalsIgnoreCase("quit")) {
-                        System.out.println("Client has left !");
-                        // Bao la user da bi mat ket noi, reload lai cai bang connection
-                        break;
-                    }
-                } while (true);
-                // tt_ci.bw.close();
-                // tt_ci.br.close();
-            } while (true);
-//            System.out.println("Exiting child thread.");
-*/
+                    
+                    
+
+                } else {
+                    // Tao code cho Notification
+                }
+            } catch (IOException e) {
+                System.out.println("There's some error: " + e.getMessage());
+            }
         }
     }
     // Methods for server to listen to client connection
     class ConnectingThread extends Thread {
+        ServerSocket ss;
+        ConnectingThread(ServerSocket ss) {
+            this.ss = ss;
+        }
         @Override
         public void run() {
-            while (true) {
-                try (
-                        Socket socket = ss.accept(); //synchronous
-                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                        ) {
-                    InputStream is = socket.getInputStream();
-                    OutputStream os = socket.getOutputStream();
+            try {
+                while (true) {
+                    Socket socket = ss.accept(); //synchronous
+                    
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                     
                     // receive username
                     String username = br.readLine();
-                    ClientInformation clientInfo = new ClientInformation(is, os, socket, username);
+                    ClientInformation clientInfo;
+                    if (userInformation.containsKey(username)) {
+                        clientInfo = userInformation.get(username);
+                    } else {
+                        clientInfo = new ClientInformation(username);
+                    }
                     clientManager.addClientInformation(clientInfo);
+                    clientManager.addClientStream(username, br, bw, ois, oos);
                     theController.reloadConnectionTree();
-                    theController.displayMessage("Client " + username + " connected!");
                     
                     // publish data to render UI
                     ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
                     onlineUsers.remove(username);
                     
-                    
                     oos.writeObject(onlineUsers);
                     oos.flush();
-//                    oos.close();
-                    
-                    tt = new TalkingThread(br, bw, ois, oos);
-                    tt.start();
-                } catch (IOException e) {
-                    System.out.println("There's an error: " + e.getMessage());
+
+                    new TalkingThread(socket, br, bw, ois, oos).start();
                 }
+            } catch (IOException e) {
+                System.out.println("There's an error: " + e.getMessage());
             }
         }
     }
@@ -218,13 +252,10 @@ public class ServerManagementModel {
             return;
         }
         try{
-            ServerSocket ss = new ServerSocket(port);
-            
-            this.ss = ss;
+            ServerSocket serverSocket = new ServerSocket(port);
             this.port = port;
                         
-            ConnectingThread ct = new ConnectingThread();
-            ct.start();
+            new ConnectingThread(serverSocket).start();
             
             theController.reloadConnectionTree();
             theController.displayMessage("Server Started!");

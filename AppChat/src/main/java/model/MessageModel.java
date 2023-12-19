@@ -1,4 +1,4 @@
-package model.component;
+package model;
 
 import java.io.Serializable;
 
@@ -15,14 +15,5 @@ public class MessageModel implements Serializable {
         this.from = from;
         this.to = to;
         this.content = content;
-    }
-    public String getFrom() {
-        return from;
-    }
-    public String getTo() {
-        return to;
-    }
-    public String getContent() {
-        return content;
     }
 }

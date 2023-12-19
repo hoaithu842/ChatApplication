@@ -1,26 +1,30 @@
 package model;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.util.HashMap;
+import java.util.HashSet;
+import model.component.MessageModel;
 
 /**
  *
  * @author hoaithu842
  */
-public class ClientInformation {
-    public InputStream is;
-    public OutputStream os;
-    public Socket socket;
+public class ClientInformation {    
     public String username;
+    public HashMap<String, HashSet<MessageModel>> historyPrivateChat;
+    public HashMap<String, HashSet<MessageModel>> historyGroupChat;
     
-    ClientInformation(InputStream is, OutputStream os, Socket socket, String username) {
-        this.is = is;
-        this.os = os;
-        this.socket = socket;
+    ClientInformation(String username) {        
         this.username = username;
+        this.historyPrivateChat = new HashMap<>();
+        this.historyGroupChat = new HashMap<>();
     }
     public String getUsername() {
         return username;
+    }
+    public void updateChat(String with, MessageModel msgModel) {
+        if (!historyPrivateChat.containsKey(with)) {
+            historyPrivateChat.put(with, new HashSet<>());
+        }
+        historyPrivateChat.get(with).add(msgModel);
     }
 }
