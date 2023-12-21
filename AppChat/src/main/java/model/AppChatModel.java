@@ -5,6 +5,8 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import model.component.MessageModel;
+import model.component.SocketPackage;
+import model.component.UserInformation;
 
 /**
  *
@@ -12,12 +14,13 @@ import model.component.MessageModel;
  */
 public class AppChatModel {
     private int port;
-    ClientInformation clientInfo;
+    UserInformation clientInfo;
     AppChatController theController;
     
     final private int DEFAULT_PORT = 8080;
     final String PRIVATE_MESSAGE = "private_message";
-    TalkingThread tt;
+    final String UPDATE_ONLINE = "update_online";
+    Socket socket;
     
     // Constructor
     public AppChatModel() {
@@ -74,94 +77,78 @@ public class AppChatModel {
             return false;
         }
     }
-    // Thread to talk to server
-    class TalkingThread extends Thread {
+    
+    class ListeningThread extends Thread {
         Socket socket;
-        BufferedReader br;
-        BufferedWriter bw;
-        ObjectInputStream ois;
-        ObjectOutputStream oos;
-
-        TalkingThread(Socket socket, BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+        ListeningThread(Socket socket) {
             this.socket = socket;
-            this.br = br;
-            this.bw = bw;
-            this.ois = ois;
-            this.oos = oos;
         }
         @Override
         public void run() {
-            while (true) {
-                try {
+            try {
+                while (true) {
                     if (socket.isClosed()) {
-                        System.out.println("Socket closed!");
+                        System.out.println("Connection lost!");
                         break;
                     }
-                    String code = br.readLine();
-                    System.out.println("Receive code: " + code);
-                    switch (code) {
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                SocketPackage pkg = (SocketPackage) ois.readObject();
+
+                System.out.println(clientInfo.getUsername() + " received from server code: " + pkg.getCode());
+
+                switch (pkg.getCode()) {
                         case PRIVATE_MESSAGE -> {
-                            System.out.println("Entered case: " + code);
-                            MessageModel msgModel = (MessageModel) ois.readObject();
+                            MessageModel msgModel = pkg.getMessageModel();
+
                             System.out.println("\t Content from " + msgModel.getFrom() + " to " + msgModel.getTo() + ": " + msgModel.getContent());
                             theController.updateChat(msgModel);
                         }
-                        case "CODE2" -> {
-                            continue;
+                        case UPDATE_ONLINE -> {
+                            String newOnlineUser = pkg.getNewOnlineUser();
+                            
+                            System.out.println("\t New online user: " + newOnlineUser);
+                            theController.updateOnlineUser(newOnlineUser);
                         }
-                        default -> {
-                            continue;
-                        }
-                    }
-
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("There's an error from TalkingThread: " + e.getMessage());
+//                        default -> {
+//                            continue;
+//                        }
+                   }
                 }
-            }
-        }
-        public void sendPrivateChat(MessageModel msgModel) {
-            try {
-                synchronized (socket) {
-                    bw.write(PRIVATE_MESSAGE);
-                    bw.newLine();
-                    bw.flush();
-
-                    oos.writeObject(msgModel);
-                    oos.flush();
-                }
-            } catch (IOException e) {
-                System.out.println("There's an error from sendMessagePrivateChat(): " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error from ListeningThread: " + e.getMessage());
             }
         }
     }
+
     public boolean checkServerPort(int port, String username) {
         if (port == DEFAULT_PORT) {
             return false;
         }
         try {
-                Socket socket = new Socket("localhost", port);
-                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                
-                this.port = port;            
-            
-                ClientInformation clientInfo = new ClientInformation(username); // import o duoi de lay lsu chat
-                this.clientInfo = clientInfo;
+                Socket socket = new Socket("localhost", port);          
 
-                //  publish username to server
+                // publish username to server
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 bw.write(username);
                 bw.newLine();
                 bw.flush();
+
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                this.clientInfo = (UserInformation) ois.readObject();             
+
+                this.socket = socket;
+                this.port = port;
 
                 //  receive data to prepare UI
                 ArrayList<String> onlineUsers = (ArrayList<String>) ois.readObject();
                 theController.prepareUIComponents(onlineUsers);
 
-                this.tt = new TalkingThread(socket, br, bw, ois, oos);
-                this.tt.start();
+                // this.tt = new TalkingThread(socket, br, bw, ois, oos);
+                // this.tt.start();
                 
+                new ListeningThread(socket).start();
+                // new TalkingThread(socket).start();
+
                 return true;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
@@ -171,7 +158,16 @@ public class AppChatModel {
     
     // Methods to publish MessageModel to Server
     public void sendMessagePrivateChat(MessageModel msgModel) {
-        tt.sendPrivateChat(msgModel);
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(msgModel));
+            oos.flush();
+
+            System.out.println("Sent!");
+        } catch (Exception e) {
+            System.out.println("Error from sendMessagePrivateChat: " + e.getMessage());
+        }
     }
     public void sendMessageGroupChat(MessageModel msgModel) {
     }

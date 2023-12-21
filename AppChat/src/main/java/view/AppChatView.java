@@ -431,6 +431,12 @@ public class AppChatView extends javax.swing.JFrame {
         showUsersPanel.revalidate();
         showUsersPanel.repaint();
     }
+    
+    public void updateUser(String username) {
+        showUsersPanel.add(new ChatItem(username), 0);
+        showUsersPanel.revalidate();
+        showUsersPanel.repaint();
+    }
 
     private void prepareChat() {
         MessageItem aMessage = new MessageItem("hoaithu842", "Hello");
@@ -447,12 +453,16 @@ public class AppChatView extends javax.swing.JFrame {
     public void updateChat(MessageModel msgModel) {
         MessageItem newMsg = new MessageItem(msgModel.getFrom(), msgModel.getContent());
         if (usernameLabel.getText().equals(msgModel.getFrom())) {
-            newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
-            showChatPanel.add(newMsg);
-        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+            System.out.println("username = from -> la nguoi gui -> RIGHT_ALIGNMENT");
             newMsg.setAlignmentX(Component.RIGHT_ALIGNMENT);
             showChatPanel.add(newMsg);
+        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+            System.out.println("username = to -> la nguoi nhan -> LEFT_ALIGNMENT");
+            newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
+            showChatPanel.add(newMsg);
         }
+        showChatPanel.revalidate();
+        showChatPanel.repaint();
     }
     
     // Event Handlers

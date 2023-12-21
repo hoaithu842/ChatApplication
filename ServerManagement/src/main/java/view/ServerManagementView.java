@@ -1,7 +1,6 @@
 package view;
 
 import model.ClientManager;
-import model.ClientInformation;
 import java.awt.event.ActionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import model.ServerManagementModel;
@@ -124,8 +123,8 @@ public class ServerManagementView extends javax.swing.JFrame {
         
 
         ClientManager clientManager = theModel.getClientManager();
-        for (ClientInformation clientInfo : clientManager.getClientInformationList()) {
-            port.add(new DefaultMutableTreeNode(clientInfo.getUsername()));
+        for (String clientUsername : clientManager.getClientUsernameList()) {
+            port.add(new DefaultMutableTreeNode(clientUsername));
         }
         
         root.add(port);

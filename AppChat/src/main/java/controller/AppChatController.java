@@ -42,8 +42,8 @@ public class AppChatController {
     }
     
     public void prepareUIComponents(ArrayList<String> onlineUsers) {
-        theView.prepareChats();
-        theView.prepareGroups();
+//        theView.prepareChats();
+//        theView.prepareGroups();
         theView.prepareUsers(onlineUsers);
     }
     
@@ -74,20 +74,27 @@ public class AppChatController {
         String from = msgModel.getFrom();
         String to = msgModel.getTo();
         String with = "";
-        if (theView.getUsernameLabel().getText().equals(from)) {
+
+        if (theModel.getUsername().equals(from)) {
             with = to;
-        } else if (theView.getUsernameLabel().getText().equals(to)) {
+        } else if (theModel.getUsername().equals(to)) {
             with = from;
         }
+        System.out.println("\t" + from + " to " + to);
         theModel.updateChat(with, msgModel);
-        
-        if (theView.getUsernameLabel().getText().equals(from) && theView.getToWhomLabel().equals(to)){
+        if (theModel.getUsername().equals(from) && theView.getToWhomLabel().getText().equals(to)){
+            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
         
-        if (theView.getUsernameLabel().getText().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
+        if (theModel.getUsername().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
+            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
+    }
+    
+    public void updateOnlineUser(String username) {
+        theView.updateUser(username);
     }
     
     // Event Handlers
@@ -167,7 +174,7 @@ public class AppChatController {
             try {
                 port = Integer.parseInt(theJoinServerView.getPort());
                 if (theModel.checkServerPort(port, theLogInView.getUsername())) {
-                    theView.getUsernameLabel().setText("@" + theModel.getUsername());
+                    theView.getUsernameLabel().setText(theModel.getUsername());
                     
                     enterAppChat();
                 } else {
