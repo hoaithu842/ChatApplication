@@ -7,26 +7,27 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import model.component.MessageModel;
+import model.component.UserInformation;
+import model.component.SocketPackage;
 
 /**
  *
  * @author hoaithu842
  */
 public class ServerManagementModel {
-    private final HashMap<String, String> userPassword;
-    private final HashMap<String, ClientInformation> userInformation;
-    
+    private final HashMap<String, UserInformation> userData;
+    ClientManager clientManager;
+
     final private int DEFAULT_PORT = 8080;
     private int port;
-    ClientManager clientManager;
     ServerManagementController theController;
     
     final String PRIVATE_MESSAGE = "private_message";
+    final String UPDATE_ONLINE = "update_online";
+
     public ServerManagementModel() {
-        userPassword = new HashMap<>();
-        userInformation = new HashMap<>();
-        
         port = DEFAULT_PORT;
+        userData = new HashMap<>();
         clientManager = new ClientManager();
         openPortToAuthorize();
     }
@@ -55,11 +56,11 @@ public class ServerManagementModel {
         }
     }
     String validUsername(String username) {
-        return userPassword.containsKey(username) ? "true" : "false";
+        return userData.containsKey(username) ? "true" : "false";
     }
     
     String validPassword(String username, String password) {
-        return userPassword.get(username).equals(password) ? "true" : "false";
+        return userData.get(username).passwordMatching(password) ? "true" : "false";
     }
     class AuthorizingThread extends Thread {
         ServerSocket ss;
@@ -90,18 +91,15 @@ public class ServerManagementModel {
                             } else if (method.equals("signup")) {
                                 sendMsg.add("false");
                             }
-                            
                         } else {
                             if (method.equals("login")) {
                                 sendMsg.add("false");
                                 sendMsg.add("false");
                             } else if (method.equals("signup")) {
-                                userPassword.put(username, password);
-                                userInformation.put(username, new ClientInformation(username));
+                                userData.put(username, new UserInformation(username, password));
                                 sendMsg.add("true");
                             }
                         }
-                            
                         oos.writeObject(sendMsg);
                         oos.flush();
                     }
@@ -117,84 +115,63 @@ public class ServerManagementModel {
             }
         }
     }
-    // Methods for server to talk to connected client
-    class TalkingThread extends Thread {
+    // Methods for server to listen to connected client
+    class ListeningThread extends Thread {
+        String username;
         Socket socket;
-        BufferedReader br;
-        BufferedWriter bw;
-        ObjectInputStream ois;
-        ObjectOutputStream oos;
 
-        TalkingThread(Socket socket, BufferedReader br, BufferedWriter bw, ObjectInputStream ois, ObjectOutputStream oos) {
+        ListeningThread(String username, Socket socket) {
+            this.username = username;
             this.socket = socket;
-            this.br = br;
-            this.bw = bw;
-            this.ois = ois;
-            this.oos = oos;
         }
         @Override
         public void run() {
-            while (true) {
-                try {
+            try {
+                while (true) {
                     if (socket.isClosed()) {
                         System.out.println("Connection lost!");
                         break;
                     }
-                    String code = br.readLine();
-                    System.out.println("Receive code: " + code);
-                    switch (code) {
-                        case PRIVATE_MESSAGE -> {
-                            MessageModel msgModel = (MessageModel) ois.readObject();
-                            System.out.println("\t Content from " + msgModel.getFrom() + " to " + msgModel.getTo() + ": " + msgModel.getContent());
-                            this.sendPrivateMessage(msgModel);
-                        }
-                        case "CODE2" -> {
-                            continue;
-                        }
-                        default -> {
-                            continue;
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                SocketPackage pkg = (SocketPackage) ois.readObject();
+
+                System.out.println("Server received from " + username + " code: " + pkg.getCode());
+
+                switch (pkg.getCode()) {
+                    case PRIVATE_MESSAGE -> {
+                        MessageModel msgModel = pkg.getMessageModel();
+
+                        String from = msgModel.getFrom();
+                        String to = msgModel.getTo();
+                        System.out.println("\t Content from " + from + " to " + to + ": " + msgModel.getContent());
+                            
+                        if (userData.containsKey(to)) {
+                            userData.get(from).updateChat(to, msgModel);
+                            userData.get(to).updateChat(from, msgModel);
+
+                            for (Socket item : clientManager.getReceiverSockets(from, to)) {
+                                ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+                                
+                                oos.writeObject(pkg);
+                                oos.flush();
+
+                                System.out.println("Sent!");
+                            }
+                        } else {
+                            continue; //notify
                         }
                     }
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("There's an error: " + e.getMessage());           
+//                        case "CODE2" -> {
+//                            continue;
+//                        }
+//                        default -> {
+//                            continue;
+//                        }
+                   }
                 }
-            }
-        }
-        public void sendPrivateMessage(MessageModel msgModel) {
-            try {
-                String from = msgModel.getFrom();
-                String to = msgModel.getTo();
-                if (userInformation.containsKey(to)) {
-                    // if receiver is a user - add to history
-                    System.out.println("Sending back to sender to render");
-                    synchronized (socket) {
-                        bw.write(PRIVATE_MESSAGE);
-                        bw.newLine();
-                        bw.flush();
-                        oos.writeObject(msgModel);
-                        oos.flush();
-                        
-                        userInformation.get(from).updateChat(to, msgModel);
-                        userInformation.get(to).updateChat(from, msgModel);
-
-                        if (clientManager.containsClient(to)) {
-                            // if is an online user - send and add to history
-                            System.out.println("Sending message to " + to);
-                            clientManager.bw(to).write(PRIVATE_MESSAGE);
-                            clientManager.bw(to).newLine();
-                            clientManager.bw(to).flush();
-                            clientManager.oos(to).writeObject(msgModel);
-                            clientManager.oos(to).flush();
-                        }
-                    }
-                    
-                    
-
-                } else {
-                    // Tao code cho Notification
-                }
-            } catch (IOException e) {
-                System.out.println("There's some error: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error from ListeningThread: " + e.getMessage());
+                System.out.println(e.getStackTrace());
             }
         }
     }
@@ -210,34 +187,30 @@ public class ServerManagementModel {
                 while (true) {
                     Socket socket = ss.accept(); //synchronous
                     
-                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                    ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                    
                     // receive username
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String username = br.readLine();
-                    ClientInformation clientInfo;
-                    if (userInformation.containsKey(username)) {
-                        clientInfo = userInformation.get(username);
-                    } else {
-                        clientInfo = new ClientInformation(username);
-                    }
-                    clientManager.addClientInformation(clientInfo);
-                    clientManager.addClientStream(username, br, bw, ois, oos);
+                    
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    UserInformation clientInformation = userData.get(username);
+                    oos.writeObject(clientInformation);
+                    oos.flush();
+
+                    clientManager.addClient(username, socket);
                     theController.reloadConnectionTree();
                     
                     // publish data to render UI
                     ArrayList<String> onlineUsers = (ArrayList<String>)clientManager.getClientUsernameList();
                     onlineUsers.remove(username);
-                    
                     oos.writeObject(onlineUsers);
                     oos.flush();
-
-                    new TalkingThread(socket, br, bw, ois, oos).start();
+                    
+                    updateOnlineUsers(username);    // for the rest clients
+                    
+                    new ListeningThread(username, socket).start();
                 }
-            } catch (IOException e) {
-                System.out.println("There's an error: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error from ConnectingThread: " + e.getMessage());
             }
         }
     }
@@ -254,13 +227,31 @@ public class ServerManagementModel {
         try{
             ServerSocket serverSocket = new ServerSocket(port);
             this.port = port;
+
+            //TalkingThread.start
                         
             new ConnectingThread(serverSocket).start();
             
             theController.reloadConnectionTree();
             theController.displayMessage("Server Started!");
-        } catch (IOException e) {
+        } catch (Exception e) {
             theController.displayMessage("Unavailable Port!");
+        }
+    }
+    // Methods
+    public void updateOnlineUsers(String newOnlineUser) {
+        if (clientManager.getReceiverSocketsExcept(newOnlineUser) == null ) {
+            return;
+        }
+        for (Socket item : clientManager.getReceiverSocketsExcept(newOnlineUser)) {
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+
+                oos.writeObject(new SocketPackage(newOnlineUser));
+                oos.flush();
+            } catch (IOException e) {
+                System.out.println("Error from updateOnlineUsers: " + e.getMessage());
+            }     
         }
     }
 }

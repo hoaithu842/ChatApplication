@@ -34,7 +34,6 @@ public class AppChatController {
         this.theJoinServerView = new JoinServerView();
         
         addEventHandlers();
-//        prepareUIComponents();
         
         // Start flow
         forceLogIn();
@@ -42,9 +41,19 @@ public class AppChatController {
     }
     
     public void prepareUIComponents(ArrayList<String> onlineUsers) {
-        theView.prepareChats();
-        theView.prepareGroups();
+//        theView.prepareChats(theModel.getHistoryChatUsers());
+//        theView.prepareGroups(theModel.getHistoryChatGroups());
+        prepareChats();
+        prepareGroups();
         theView.prepareUsers(onlineUsers);
+    }
+    
+    public void prepareChats() {
+        theView.prepareChats(theModel.getHistoryChatUsers());
+    }
+    
+    public void prepareGroups() {
+        theView.prepareGroups(theModel.getHistoryChatGroups());
     }
     
     // Methods for SignUp/LogIn
@@ -74,20 +83,27 @@ public class AppChatController {
         String from = msgModel.getFrom();
         String to = msgModel.getTo();
         String with = "";
-        if (theView.getUsernameLabel().getText().equals(from)) {
+
+        if (theModel.getUsername().equals(from)) {
             with = to;
-        } else if (theView.getUsernameLabel().getText().equals(to)) {
+        } else if (theModel.getUsername().equals(to)) {
             with = from;
         }
+        System.out.println("\t" + from + " to " + to);
         theModel.updateChat(with, msgModel);
-        
-        if (theView.getUsernameLabel().getText().equals(from) && theView.getToWhomLabel().equals(to)){
+        if (theModel.getUsername().equals(from) && theView.getToWhomLabel().getText().equals(to)){
+            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
         
-        if (theView.getUsernameLabel().getText().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
+        if (theModel.getUsername().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
+            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
+    }
+    
+    public void updateOnlineUser(String username) {
+        theView.updateUser(username);
     }
     
     // Event Handlers
@@ -167,7 +183,7 @@ public class AppChatController {
             try {
                 port = Integer.parseInt(theJoinServerView.getPort());
                 if (theModel.checkServerPort(port, theLogInView.getUsername())) {
-                    theView.getUsernameLabel().setText("@" + theModel.getUsername());
+                    theView.getUsernameLabel().setText(theModel.getUsername());
                     
                     enterAppChat();
                 } else {
@@ -187,6 +203,7 @@ public class AppChatController {
             Component clickedComponent = theView.getShowChatsPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
+                theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
     }
@@ -205,6 +222,7 @@ public class AppChatController {
             Component clickedComponent = theView.getShowUsersPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
+                theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
     }
@@ -215,12 +233,16 @@ public class AppChatController {
             String to = theView.getToWhomLabel().getText();
             String content = theView.getTypedMessageTextField().getText();
             theView.getTypedMessageTextField().setText("");
-            
+            if (to.equals("")) {
+                theView.displayMessage("Invalid user!");
+            }
             MessageModel msgModel = new MessageModel(from, to, content);
             if (theView.isShowGroupsOpening()) {
                 theModel.sendMessageGroupChat(msgModel);
+                theView.switchToGroups();
             } else {
                 theModel.sendMessagePrivateChat(msgModel);
+                theView.switchToChats();
             }
         }
     }

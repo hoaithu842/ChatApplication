@@ -1,12 +1,12 @@
+model\component\SocketPackage.class
 model\component\MessageModel.class
 model\ServerManagementModel$AuthorizingThread.class
+model\ServerManagementModel$ListeningThread.class
 controller\ServerManagementController$StartServerButtonListener.class
 model\ServerManagementModel.class
-model\component\TalkingStream.class
 model\ClientManager.class
-model\ClientInformation.class
 ServerManagement.class
 model\ServerManagementModel$ConnectingThread.class
+model\component\UserInformation.class
 controller\ServerManagementController.class
-model\ServerManagementModel$TalkingThread.class
 view\ServerManagementView.class

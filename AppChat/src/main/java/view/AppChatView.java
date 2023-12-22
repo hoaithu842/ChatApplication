@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import model.component.MessageModel;
 import view.component.MessageItem;
 
@@ -74,7 +75,6 @@ public class AppChatView extends javax.swing.JFrame {
 
         usernameLabel.setBackground(new java.awt.Color(0, 102, 102));
         usernameLabel.setFont(new java.awt.Font("Segoe UI", 3, 24)); // NOI18N
-        usernameLabel.setText("@username");
         usernameLabel.setMaximumSize(new java.awt.Dimension(250, 50));
         usernameLabel.setMinimumSize(new java.awt.Dimension(250, 50));
         usernameLabel.setPreferredSize(new java.awt.Dimension(250, 50));
@@ -278,7 +278,6 @@ public class AppChatView extends javax.swing.JFrame {
         );
 
         toWhomLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        toWhomLabel.setText("@username");
         toWhomLabel.setPreferredSize(new java.awt.Dimension(66, 50));
 
         inputBoxPanel.setMaximumSize(new java.awt.Dimension(66, 50));
@@ -408,18 +407,22 @@ public class AppChatView extends javax.swing.JFrame {
         return showGroupsPanel.isShowing();
     }
     // Setters
-    public void prepareChats() { // truyen them data
-        for (int i=0; i<20; i++) {
-            ChatItem item = new ChatItem("Chat " + i);
-            showChatsPanel.add(item, 0);
+    public void prepareChats(ArrayList<String> msgWithUsers) {
+        showChatsPanel.removeAll();
+        if (msgWithUsers == null) {
+            showChatsPanel.revalidate();
+            showChatsPanel.repaint();
+            return;
+        }
+        for (String username : msgWithUsers) {
+            showChatsPanel.add(new ChatItem(username), 0);
         }
         showChatsPanel.revalidate();
         showChatsPanel.repaint();
     }
-    public void prepareGroups() {
-        for (int i = 0; i < 20; i++) {
-            ChatItem item = new ChatItem("Group " + i);
-            showGroupsPanel.add(item, 0);
+    public void prepareGroups(ArrayList<String> msgWithGroups) {
+        for (String groupname : msgWithGroups) {
+            showGroupsPanel.add(new ChatItem(groupname), 0);
         }
         showGroupsPanel.revalidate();
         showGroupsPanel.repaint();
@@ -431,39 +434,71 @@ public class AppChatView extends javax.swing.JFrame {
         showUsersPanel.revalidate();
         showUsersPanel.repaint();
     }
+    
+    public void updateUser(String username) {
+        showUsersPanel.add(new ChatItem(username), 0);
+        showUsersPanel.revalidate();
+        showUsersPanel.repaint();
+    }
 
-    private void prepareChat() {
-        MessageItem aMessage = new MessageItem("hoaithu842", "Hello");
-        aMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
-        showChatPanel.add(aMessage);
-        MessageItem bMessage = new MessageItem("hoaithuwz", "Hi");
-        bMessage.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        showChatPanel.add(bMessage);
-        MessageItem cMessage = new MessageItem("hoaithu842", "Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc?? Sao ko scroll dc??");
-        cMessage.setAlignmentX(Component.LEFT_ALIGNMENT);
-        showChatPanel.add(cMessage);
+    public void prepareChat(HashSet<MessageModel> msgModels) {
+        showChatPanel.removeAll();
+        if (msgModels == null) {
+            showChatPanel.revalidate();
+            showChatPanel.repaint();
+            return;
+        }
+        for (MessageModel msgModel : msgModels) {
+            updateChat(msgModel);
+        }
+        showChatPanel.revalidate();
+        showChatPanel.repaint();
     }
     
     public void updateChat(MessageModel msgModel) {
         MessageItem newMsg = new MessageItem(msgModel.getFrom(), msgModel.getContent());
         if (usernameLabel.getText().equals(msgModel.getFrom())) {
-            newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
-            showChatPanel.add(newMsg);
-        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+            System.out.println("username = from -> la nguoi gui -> RIGHT_ALIGNMENT");
             newMsg.setAlignmentX(Component.RIGHT_ALIGNMENT);
             showChatPanel.add(newMsg);
+        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+            System.out.println("username = to -> la nguoi nhan -> LEFT_ALIGNMENT");
+            newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
+            showChatPanel.add(newMsg);
         }
+        showChatPanel.revalidate();
+        showChatPanel.repaint();
+    }
+    
+    public void displayMessage(String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message);
     }
     
     // Event Handlers
+    public void switchToChats() {
+        groupsPanel.setVisible(false);
+        usersPanel.setVisible(false);
+        chatsPanel.setVisible(true);
+        // them details
+    }
+    public void switchToGroups() {
+        chatsPanel.setVisible(false);
+        usersPanel.setVisible(false);
+        groupsPanel.setVisible(true);
+        // them details
+    }
+    public void switchToUsers() {
+        chatsPanel.setVisible(false);
+        groupsPanel.setVisible(false);
+        usersPanel.setVisible(true);
+        // them details
+    }
     private void addEventHandlers() {
         // showChatsButtonListener
         showChatsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                groupsPanel.setVisible(false);
-                usersPanel.setVisible(false);
-                chatsPanel.setVisible(true);
+                switchToChats();
             }
         });
         
@@ -471,9 +506,7 @@ public class AppChatView extends javax.swing.JFrame {
         showGroupsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chatsPanel.setVisible(false);
-                usersPanel.setVisible(false);
-                groupsPanel.setVisible(true);
+                switchToGroups();
             }
         });
         
@@ -481,10 +514,7 @@ public class AppChatView extends javax.swing.JFrame {
         showUsersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chatsPanel.setVisible(false);
-                groupsPanel.setVisible(false);
-                usersPanel.setVisible(true);
-                // ycau reload
+                switchToUsers();
             }
         });
     }

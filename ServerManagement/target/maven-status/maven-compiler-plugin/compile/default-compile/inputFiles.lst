@@ -1,8 +1,8 @@
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\ServerManagementModel.java
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\controller\ServerManagementController.java
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\component\MessageModel.java
+C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\component\UserInformation.java
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\ClientManager.java
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\ServerManagement.java
-C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\component\TalkingStream.java
+C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\component\SocketPackage.java
 C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\view\ServerManagementView.java
-C:\Users\USER\Desktop\ChatApplication\ServerManagement\src\main\java\model\ClientInformation.java
