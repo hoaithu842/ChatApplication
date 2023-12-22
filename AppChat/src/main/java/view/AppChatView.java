@@ -2,7 +2,6 @@ package view;
 
 import view.component.ChatItem;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ public class AppChatView extends javax.swing.JFrame {
      */
     public AppChatView() {
         initComponents();
-        addEventHandlers();
     }
 
     /**
@@ -60,7 +58,6 @@ public class AppChatView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("App Chat - 21127176 - 21KTPM1");
-        setMaximumSize(new java.awt.Dimension(1000, 600));
         setMinimumSize(new java.awt.Dimension(1000, 600));
         setName("AppChatFrame"); // NOI18N
         setResizable(false);
@@ -420,9 +417,9 @@ public class AppChatView extends javax.swing.JFrame {
         showChatsPanel.revalidate();
         showChatsPanel.repaint();
     }
-    public void prepareGroups(ArrayList<String> msgWithGroups) {
-        for (String groupname : msgWithGroups) {
-            showGroupsPanel.add(new ChatItem(groupname), 0);
+    public void prepareGroups(ArrayList<Integer> msgWithGroups) {
+        for (Integer groupID : msgWithGroups) {
+            showGroupsPanel.add(new ChatItem(groupID.toString()), 0);
         }
         showGroupsPanel.revalidate();
         showGroupsPanel.repaint();
@@ -442,13 +439,16 @@ public class AppChatView extends javax.swing.JFrame {
     }
 
     public void prepareChat(HashSet<MessageModel> msgModels) {
+        System.out.println("1. Clear all chat!");
         showChatPanel.removeAll();
         if (msgModels == null) {
             showChatPanel.revalidate();
             showChatPanel.repaint();
             return;
         }
+        System.out.println("Not empty");
         for (MessageModel msgModel : msgModels) {
+            System.out.println(msgModel.getContent());
             updateChat(msgModel);
         }
         showChatPanel.revalidate();
@@ -474,7 +474,6 @@ public class AppChatView extends javax.swing.JFrame {
         javax.swing.JOptionPane.showMessageDialog(this, message);
     }
     
-    // Event Handlers
     public void switchToChats() {
         groupsPanel.setVisible(false);
         usersPanel.setVisible(false);
@@ -493,30 +492,18 @@ public class AppChatView extends javax.swing.JFrame {
         usersPanel.setVisible(true);
         // them details
     }
-    private void addEventHandlers() {
-        // showChatsButtonListener
-        showChatsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToChats();
-            }
-        });
-        
-        // showGroupsButtonListener
-        showGroupsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToGroups();
-            }
-        });
-        
-        // showUsersButtonListener
-        showUsersButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToUsers();
-            }
-        });
+    
+    // Event Handlers
+    public void addShowChatsButtonActionListener(ActionListener listenForClick) {
+        showChatsButton.addActionListener(listenForClick);
+    }
+    
+    public void addShowGroupsButtonMouseListener(MouseListener listenForClick) {
+        showGroupsButton.addMouseListener(listenForClick);
+    }
+    
+    public void addShowUsersButtonActionListener(ActionListener listenForClick) {
+        showUsersButton.addActionListener(listenForClick);
     }
 
     public void addShowChatsPanelMouseListener(MouseListener listenForClick) {

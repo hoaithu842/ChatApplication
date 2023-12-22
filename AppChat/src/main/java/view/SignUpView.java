@@ -43,7 +43,6 @@ public class SignUpView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("App Chat - 21127176 - 21KTPM1");
-        setMaximumSize(new java.awt.Dimension(700, 500));
         setMinimumSize(new java.awt.Dimension(700, 500));
         setName("SignUpFrame"); // NOI18N
         setResizable(false);

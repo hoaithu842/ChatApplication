@@ -13,7 +13,7 @@ public class UserInformation implements Serializable {
     private String username;
     private String password;
     public LinkedHashMap<String, HashSet<MessageModel>> historyPrivateChat;
-    public LinkedHashMap<String, HashSet<MessageModel>> historyGroupChat;
+    public LinkedHashMap<Integer, HashSet<MessageModel>> historyGroupChat;
     
     public UserInformation(String username, String password) {        
         this.username = username;
@@ -30,7 +30,7 @@ public class UserInformation implements Serializable {
         return new ArrayList<>(historyPrivateChat.keySet());
     }
     
-    public ArrayList<String> getHistoryChatGroups() {
+    public ArrayList<Integer> getHistoryChatGroups() {
         return new ArrayList<>(historyGroupChat.keySet());
     }
     
@@ -45,11 +45,16 @@ public class UserInformation implements Serializable {
         return this.password.equals(password);
     }
 
+    public void createGroup(Integer ID) {
+        historyGroupChat.put(ID, new HashSet<>());
+    }
+    
     public void updateChat(String with, MessageModel msgModel) {
         if (!historyPrivateChat.containsKey(with)) {
             historyPrivateChat.put(with, new HashSet<>());
         }
         HashSet<MessageModel> msgModels = historyPrivateChat.get(with);
+        msgModels.add(msgModel);
         historyPrivateChat.put(with, msgModels);
     }
 }

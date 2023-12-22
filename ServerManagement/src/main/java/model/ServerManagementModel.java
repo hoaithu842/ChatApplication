@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import model.component.GroupInformation;
 import model.component.MessageModel;
 import model.component.UserInformation;
 import model.component.SocketPackage;
@@ -16,18 +17,22 @@ import model.component.SocketPackage;
  */
 public class ServerManagementModel {
     private final HashMap<String, UserInformation> userData;
+    private final HashMap<Integer, GroupInformation> groupData;
     ClientManager clientManager;
 
     final private int DEFAULT_PORT = 8080;
     private int port;
     ServerManagementController theController;
     
-    final String PRIVATE_MESSAGE = "private_message";
-    final String UPDATE_ONLINE = "update_online";
-
+    final int PRIVATE_MESSAGE = 1;
+    final int UPDATE_ONLINE = 2;
+    final int TOTAL_USERS = 3;
+    final int CREATE_GROUP = 4;
+    
     public ServerManagementModel() {
         port = DEFAULT_PORT;
         userData = new HashMap<>();
+        groupData = new HashMap<>();
         clientManager = new ClientManager();
         openPortToAuthorize();
     }
@@ -132,42 +137,73 @@ public class ServerManagementModel {
                         System.out.println("Connection lost!");
                         break;
                     }
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                SocketPackage pkg = (SocketPackage) ois.readObject();
+                    ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                    SocketPackage pkg = (SocketPackage) ois.readObject();
 
-                System.out.println("Server received from " + username + " code: " + pkg.getCode());
+                    System.out.println("Server received from " + username + " code: " + pkg.getCode());
 
-                switch (pkg.getCode()) {
-                    case PRIVATE_MESSAGE -> {
-                        MessageModel msgModel = pkg.getMessageModel();
+                    switch (pkg.getCode()) {
+                        case PRIVATE_MESSAGE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
 
-                        String from = msgModel.getFrom();
-                        String to = msgModel.getTo();
-                        System.out.println("\t Content from " + from + " to " + to + ": " + msgModel.getContent());
-                            
-                        if (userData.containsKey(to)) {
-                            userData.get(from).updateChat(to, msgModel);
-                            userData.get(to).updateChat(from, msgModel);
+                            String from = msgModel.getFrom();
+                            String to = msgModel.getTo();
+                            System.out.println("\t Content from " + from + " to " + to + ": " + msgModel.getContent());
 
-                            for (Socket item : clientManager.getReceiverSockets(from, to)) {
-                                ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
-                                
-                                oos.writeObject(pkg);
-                                oos.flush();
+                            if (userData.containsKey(to)) {
+                                userData.get(from).updateChat(to, msgModel);
+                                userData.get(to).updateChat(from, msgModel);
 
-                                System.out.println("Sent!");
+                                for (Socket item : clientManager.getReceiverSockets(from, to)) {
+                                    ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+
+                                    oos.writeObject(pkg);
+                                    oos.flush();
+
+                                    System.out.println("Sent!");
+                                }
+                            } else {
+                                continue; //notify
                             }
-                        } else {
-                            continue; //notify
                         }
+                        case TOTAL_USERS -> {
+                            ArrayList<String> totalUsers = new ArrayList<>(userData.keySet());
+                            pkg.setTotalUsers(totalUsers);
+                            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+
+                            oos.writeObject(pkg);
+                            oos.flush();
+
+                            System.out.println("Sent totalUsers!");
+                        }
+                        case CREATE_GROUP -> {
+                            String groupName = pkg.getNewOnlineUser(); // String obj represents groupName
+                            ArrayList<String> groupMembers = pkg.getTotalUsers(); // Same
+                            
+                            int ID = groupData.size() + 1;
+                            groupData.put(ID, new GroupInformation(ID, groupName, groupMembers));
+                            
+                            for (String member : groupMembers) {
+                                userData.get(member).createGroup(ID);
+                                if (clientManager.containsClient(member)) {
+                                    Socket socket = clientManager.getReceiver(member);
+                                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+
+                                    pkg.setGroupID(ID);
+                                    oos.writeObject(pkg);
+                                    oos.flush();
+
+                                    System.out.println("Sent createGroup!");
+                                }
+                                
+                            }
+                            // hien thi trong group
+                        }
+
+    //                        default -> {
+    //                            continue;
+    //                        }
                     }
-//                        case "CODE2" -> {
-//                            continue;
-//                        }
-//                        default -> {
-//                            continue;
-//                        }
-                   }
                 }
             } catch (Exception e) {
                 System.out.println("Error from ListeningThread: " + e.getMessage());
@@ -247,7 +283,7 @@ public class ServerManagementModel {
             try {
                 ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
 
-                oos.writeObject(new SocketPackage(newOnlineUser));
+                oos.writeObject(new SocketPackage(UPDATE_ONLINE ,newOnlineUser));
                 oos.flush();
             } catch (IOException e) {
                 System.out.println("Error from updateOnlineUsers: " + e.getMessage());

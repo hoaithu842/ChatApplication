@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import model.AppChatModel;
 import model.component.MessageModel;
 import view.AppChatView;
+import view.CreateGroupView;
 import view.JoinServerView;
 import view.LogInView;
 import view.SignUpView;
@@ -24,6 +25,7 @@ public class AppChatController {
     private final LogInView theLogInView;
     private final SignUpView theSignUpView;
     private final JoinServerView theJoinServerView;
+    private final CreateGroupView theCreateGroupView;
     
     public AppChatController(AppChatView theView, AppChatModel theModel) {
         // Declaration
@@ -32,6 +34,7 @@ public class AppChatController {
         this.theLogInView = new LogInView();
         this.theSignUpView = new SignUpView();
         this.theJoinServerView = new JoinServerView();
+        this.theCreateGroupView = new CreateGroupView();
         
         addEventHandlers();
         
@@ -87,15 +90,13 @@ public class AppChatController {
         } else if (theModel.getUsername().equals(to)) {
             with = from;
         }
-        System.out.println("\t" + from + " to " + to);
+
         theModel.updateChat(with, msgModel);
         if (theModel.getUsername().equals(from) && theView.getToWhomLabel().getText().equals(to)){
-            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
         
         if (theModel.getUsername().equals(to) && theView.getToWhomLabel().getText().equals(from)) {
-            System.out.println("\t\t-> Updating UI!");
             theView.updateChat(msgModel);
         }
     }
@@ -104,6 +105,9 @@ public class AppChatController {
         theView.updateUser(username);
     }
     
+    public void updateGroups(int ID) {
+        theModel.updateGroups(ID);
+    }
     // Event Handlers
     final void addEventHandlers() {
         // Event Handlers for theLogInView
@@ -117,7 +121,15 @@ public class AppChatController {
         // Event Handlers for theJoinServerView
         theJoinServerView.addJoinServerButtonListener(new JoinServerButtonListener());
         
+        // Event Handlers for theCreateGroupView
+        theCreateGroupView.addCreateGroupButtonActionListener(new CreateGroupButtonActionListener());
+        
         // Event Handlers for theView
+            // 3 menu button
+        theView.addShowChatsButtonActionListener(new ShowChatsButtonActionListener());
+        theView.addShowGroupsButtonMouseListener(new ShowGroupsButtonMouseListener());
+        theView.addShowUsersButtonActionListener(new ShowUsersButtonActionListener());
+            // item of panel
         theView.addShowChatsPanelMouseListener(new ShowChatsPanelMouseListener());
         theView.addShowGroupsPanelMouseListener(new ShowGroupsPanelMouseListener());
         theView.addShowUsersPanelMouseListener(new ShowUsersPanelMouseListener());
@@ -194,13 +206,51 @@ public class AppChatController {
         }
     }
     
-    // Even Handlers for theView    
+    // Event Handlers for theCreateGroupView
+    class CreateGroupButtonActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            String groupName = theCreateGroupView.getGroupName();
+            ArrayList<String> groupMembers = theCreateGroupView.getGroupMembers();
+            
+            if (groupMembers.size()<=2 || groupName.isEmpty() || groupName.isBlank()) {
+                theCreateGroupView.displayMessage("Cannot create with empty group name or member!");
+            } else {
+                theModel.sendCreateGroupRequest(groupName, groupMembers);
+                theCreateGroupView.displayMessage("Done");
+                theCreateGroupView.setVisible(false);
+            }
+        }
+    }
+    // Event Handlers for theView    
+    class ShowChatsButtonActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            theView.switchToChats();
+        }
+    }
+    class ShowGroupsButtonMouseListener extends MouseAdapter {
+        public void mouseClicked(MouseEvent event) {
+            if (event.getClickCount()==2) { // double-click to create group
+                theModel.sendTotalUsersRequest();
+                return;
+            }
+            theView.switchToGroups();
+        }
+    }
+    class ShowUsersButtonActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            theView.switchToUsers();
+        }
+    }
     class ShowChatsPanelMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowChatsPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
+                System.out.println("Clicked!");
                 theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
@@ -220,6 +270,7 @@ public class AppChatController {
             Component clickedComponent = theView.getShowUsersPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
+                System.out.println("Clicked!");
                 theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
@@ -243,5 +294,11 @@ public class AppChatController {
                 theView.switchToChats();
             }
         }
+    }
+    
+    // Methods to create group
+    public void createGroup(ArrayList<String> totalUsers) {
+        theCreateGroupView.prepareList(totalUsers);
+        theCreateGroupView.setVisible(true);
     }
 }

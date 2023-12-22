@@ -19,8 +19,11 @@ public class AppChatModel {
     AppChatController theController;
     
     final private int DEFAULT_PORT = 8080;
-    final String PRIVATE_MESSAGE = "private_message";
-    final String UPDATE_ONLINE = "update_online";
+    final int PRIVATE_MESSAGE = 1;
+    final int UPDATE_ONLINE = 2;
+    final int TOTAL_USERS = 3;
+    final int CREATE_GROUP = 4;
+    
     Socket socket;
     
     // Constructor
@@ -37,7 +40,7 @@ public class AppChatModel {
     public ArrayList<String> getHistoryChatUsers() {
         return clientInfo.getHistoryChatUsers();
     }
-    public ArrayList<String> getHistoryChatGroups() {
+    public ArrayList<Integer> getHistoryChatGroups() {
         return clientInfo.getHistoryChatGroups();
     }
     // Setters
@@ -47,6 +50,10 @@ public class AppChatModel {
     public void updateChat(String with, MessageModel msgModel) {
         clientInfo.updateChat(with, msgModel);
         theController.prepareChats();
+    }
+    public void updateGroups(int ID) {
+        clientInfo.createGroup(ID);
+        // prepare Group?
     }
     //  Methods for authorization
     public boolean authorize(String username, String password, String method) {
@@ -120,6 +127,17 @@ public class AppChatModel {
                                 System.out.println("\t New online user: " + newOnlineUser);
                                 theController.updateOnlineUser(newOnlineUser);
                             }
+                            case TOTAL_USERS -> {
+                                ArrayList<String> totalUsers = pkg.getTotalUsers();
+                                System.out.println("So luong user: " + totalUsers.size());
+                                theController.createGroup(totalUsers);
+                            }
+                            case CREATE_GROUP -> {
+                                int ID = pkg.getGroupID();
+//                                clientInfo.createGroup(ID);
+                                System.out.println("Created group with ID: " + ID);
+                                theController.updateGroups(ID);
+                            }
     //                        default -> {
     //                            continue;
     //                        }
@@ -167,14 +185,32 @@ public class AppChatModel {
         ObjectOutputStream oos = null;
         try {
             oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject(new SocketPackage(msgModel));
+            oos.writeObject(new SocketPackage(PRIVATE_MESSAGE, msgModel));
             oos.flush();
-
-            System.out.println("Sent!");
         } catch (Exception e) {
             System.out.println("Error from sendMessagePrivateChat: " + e.getMessage());
         }
     }
     public void sendMessageGroupChat(MessageModel msgModel) {
+    }
+    public void sendTotalUsersRequest() {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(TOTAL_USERS));
+            oos.flush();
+        } catch (Exception e) {
+            System.out.println("Error from sendTotalUsersRequest: " + e.getMessage());
+        }
+    }
+    public void sendCreateGroupRequest(String groupName, ArrayList<String> groupMembers) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(CREATE_GROUP, groupName, groupMembers));
+            oos.flush();
+        } catch (Exception e) {
+            System.out.println("Error from sendCreateGroupRequest: " + e.getMessage());
+        }
     }
 }
