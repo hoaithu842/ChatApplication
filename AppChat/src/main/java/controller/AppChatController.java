@@ -41,8 +41,6 @@ public class AppChatController {
     }
     
     public void prepareUIComponents(ArrayList<String> onlineUsers) {
-//        theView.prepareChats(theModel.getHistoryChatUsers());
-//        theView.prepareGroups(theModel.getHistoryChatGroups());
         prepareChats();
         prepareGroups();
         theView.prepareUsers(onlineUsers);
