@@ -2,6 +2,7 @@ package view;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -36,8 +37,11 @@ public class CreateGroupView extends javax.swing.JFrame {
 
         groupNameLabel.setText("Group Name:");
 
+        groupNameTextField.setMinimumSize(new java.awt.Dimension(200, 32));
+
         membersLabel.setText("Select Members:");
 
+        membersList.setMinimumSize(new java.awt.Dimension(200, 200));
         showMembersScrollPane.setViewportView(membersList);
 
         createGroupButton.setText("Create");
@@ -53,7 +57,7 @@ public class CreateGroupView extends javax.swing.JFrame {
                     .addComponent(groupNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(groupNameTextField)
+                    .addComponent(groupNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(showMembersScrollPane))
                 .addContainerGap(31, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -104,9 +108,15 @@ public class CreateGroupView extends javax.swing.JFrame {
     }
     
     public void prepareList(ArrayList<String> totalUsers) {
+        System.out.println("Rendering " + totalUsers.toString());
         groupNameTextField.setText("");
         membersList.removeAll();
-        membersList = new javax.swing.JList(totalUsers.toArray());
+//        membersList = new javax.swing.JList(totalUsers.toArray());
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (String user : totalUsers) {
+            listModel.addElement(user);
+        }
+        membersList.setModel(listModel);
         membersList.revalidate();
         membersList.repaint();
     }
