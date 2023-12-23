@@ -18,6 +18,7 @@ public class ServerManagementController {
         this.theView = theView;
         
         this.theView.addStartServerButtonListener(new StartServerButtonListener());
+        this.theView.setIPLabel(theModel.getIP());
     }
     
     public void reloadConnectionTree() {

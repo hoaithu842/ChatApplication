@@ -2,8 +2,10 @@ package model;
 
 import controller.ServerManagementController;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import model.component.GroupInformation;
@@ -40,6 +42,16 @@ public class ServerManagementModel {
         openPortToAuthorize();
     }
     // Getters
+    public String getIP() {
+        InetAddress IP;
+        try {
+            IP = InetAddress.getLocalHost();
+            return IP.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return "localhost";
+    }
     public ClientManager getClientManager() {
         return clientManager;
     }

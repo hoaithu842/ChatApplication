@@ -35,6 +35,16 @@ public class AppChatModel {
         
     }
     // Getters
+    public String getIP() {
+        InetAddress IP;
+        try {
+            IP = InetAddress.getLocalHost();
+            return IP.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return "localhost";
+    }
     public String getUsername() {
         return clientInfo.getUsername();
     }
@@ -163,7 +173,7 @@ public class AppChatModel {
             return false;
         }
         try {
-            Socket socket = new Socket("localhost", port);          
+            Socket socket = new Socket(getIP(), port);          
 
             // publish username to server
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
