@@ -30,7 +30,8 @@ public class ServerManagement {
         }
     }
     public static void main(String[] args) throws IOException, FileNotFoundException, ClassNotFoundException {
-        ServerManagementModel theModel = getModel();
+//        ServerManagementModel theModel = getModel();
+        ServerManagementModel theModel = new ServerManagementModel();
         ServerManagementView theView = new ServerManagementView();
         ServerManagementController theController = new ServerManagementController(theView, theModel);
         theModel.setController(theController);
