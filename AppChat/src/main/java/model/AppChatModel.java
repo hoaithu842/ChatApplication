@@ -25,6 +25,8 @@ public class AppChatModel {
     final int TOTAL_USERS = 3;
     final int CREATE_GROUP = 4;
     final int GROUP_MESSAGE = 5;
+    final int PRIVATE_FILE = 6;
+    final int GROUP_FILE = 7;
     
     Socket socket;
     
@@ -119,31 +121,35 @@ public class AppChatModel {
                     SocketPackage pkg = (SocketPackage) ois.readObject();
 
                     switch (pkg.getCode()) {
-                            case PRIVATE_MESSAGE -> {
-                                MessageModel msgModel = pkg.getMessageModel();
-                                theController.updateChat(msgModel);
-                            }
-                            case UPDATE_ONLINE -> {
-                                String newOnlineUser = pkg.getNewOnlineUser();
-                                theController.updateOnlineUser(newOnlineUser);
-                            }
-                            case TOTAL_USERS -> {
-                                ArrayList<String> totalUsers = pkg.getTotalUsers();
-                                theController.createGroup(totalUsers);
-                            }
-                            case CREATE_GROUP -> {
-                                int ID = pkg.getGroupID();
-                                GroupInformation newGroup = pkg.getNewGroup();
-                                theController.updateCreateGroups(ID, newGroup);
-                            }
-                            case GROUP_MESSAGE -> {
-                                MessageModel msgModel = pkg.getMessageModel();
-                                theController.updateGroupChat(msgModel);
-//                                System.out.println("\t Content from " + msgModel.getFrom() + "to group ID" + msgModel.getTo());
-                            }
-    //                        default -> {
-    //                            continue;
-    //                        }
+                        case PRIVATE_MESSAGE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            theController.updateChat(msgModel);
+                        }
+                        case UPDATE_ONLINE -> {
+                            String newOnlineUser = pkg.getNewOnlineUser();
+                            theController.updateOnlineUser(newOnlineUser);
+                        }
+                        case TOTAL_USERS -> {
+                            ArrayList<String> totalUsers = pkg.getTotalUsers();
+                            theController.createGroup(totalUsers);
+                        }
+                        case CREATE_GROUP -> {
+                            int ID = pkg.getGroupID();
+                            GroupInformation newGroup = pkg.getNewGroup();
+                            theController.updateCreateGroups(ID, newGroup);
+                        }
+                        case GROUP_MESSAGE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            theController.updateGroupChat(msgModel);
+                        }
+                        case PRIVATE_FILE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            theController.receivePrivateFile(msgModel);
+                        }
+                        case GROUP_FILE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            theController.receiveGroupFile(msgModel);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -202,6 +208,26 @@ public class AppChatModel {
             oos.flush();
         } catch (Exception e) {
             System.out.println("Error from sendMessageGroupChat: " + e.getMessage());
+        }
+    }
+    public void sendFilePrivateChat(MessageModel msgModel) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(PRIVATE_FILE, msgModel));
+            oos.flush();
+        } catch (Exception e) {
+            System.out.println("Error from sendFilePrivateChat: " + e.getMessage());
+        }
+    }
+    public void sendFileGroupChat(MessageModel msgModel) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(GROUP_FILE, msgModel));
+            oos.flush();
+        } catch (Exception e) {
+            System.out.println("Error from sendFileGroupChat: " + e.getMessage());
         }
     }
     public void sendTotalUsersRequest() {

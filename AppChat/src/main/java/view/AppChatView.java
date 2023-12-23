@@ -4,6 +4,7 @@ import view.component.ChatItem;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import model.component.GroupInformation;
@@ -40,6 +41,7 @@ public class AppChatView extends javax.swing.JFrame {
         showChatsButton = new javax.swing.JButton();
         showGroupsButton = new javax.swing.JButton();
         showUsersButton = new javax.swing.JButton();
+        panelStatusLabel = new javax.swing.JLabel();
         menuLayeredPane = new javax.swing.JLayeredPane();
         chatsPanel = new javax.swing.JPanel();
         showChatsScrollPane = new javax.swing.JScrollPane();
@@ -55,6 +57,7 @@ public class AppChatView extends javax.swing.JFrame {
         inputBoxPanel = new javax.swing.JPanel();
         typedMessageTextField = new javax.swing.JTextField();
         sendMessageButton = new javax.swing.JButton();
+        uploadButton = new javax.swing.JButton();
         showMessageScrollPane = new javax.swing.JScrollPane();
         showChatPanel = new javax.swing.JPanel();
         groupIdLabel = new javax.swing.JLabel();
@@ -108,24 +111,33 @@ public class AppChatView extends javax.swing.JFrame {
         showUsersButton.setMinimumSize(new java.awt.Dimension(32, 32));
         showUsersButton.setPreferredSize(new java.awt.Dimension(32, 32));
 
+        panelStatusLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        panelStatusLabel.setForeground(new java.awt.Color(0, 102, 102));
+        panelStatusLabel.setText("Messages");
+
         javax.swing.GroupLayout menuPanelLayout = new javax.swing.GroupLayout(menuPanel);
         menuPanel.setLayout(menuPanelLayout);
         menuPanelLayout.setHorizontalGroup(
             menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menuPanelLayout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addGap(16, 16, 16)
                 .addComponent(showChatsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(showGroupsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53)
+                .addGap(18, 18, 18)
                 .addComponent(showUsersButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+                .addGap(18, 18, 18)
+                .addComponent(panelStatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         menuPanelLayout.setVerticalGroup(
             menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(showUsersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(showGroupsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(showChatsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(menuPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panelStatusLabel))
         );
 
         menuLayeredPane.setMaximumSize(new java.awt.Dimension(250, 544));
@@ -286,14 +298,18 @@ public class AppChatView extends javax.swing.JFrame {
 
         sendMessageButton.setText("Send");
 
+        uploadButton.setText("Upload");
+
         javax.swing.GroupLayout inputBoxPanelLayout = new javax.swing.GroupLayout(inputBoxPanel);
         inputBoxPanel.setLayout(inputBoxPanelLayout);
         inputBoxPanelLayout.setHorizontalGroup(
             inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(inputBoxPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(typedMessageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 210, Short.MAX_VALUE)
+                .addComponent(typedMessageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(uploadButton)
+                .addGap(18, 18, 18)
                 .addComponent(sendMessageButton)
                 .addContainerGap())
         );
@@ -301,9 +317,10 @@ public class AppChatView extends javax.swing.JFrame {
             inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(inputBoxPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(typedMessageTextField)
-                    .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE))
+                .addGroup(inputBoxPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(uploadButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(typedMessageTextField))
                 .addContainerGap())
         );
 
@@ -325,7 +342,7 @@ public class AppChatView extends javax.swing.JFrame {
                     .addComponent(showMessageScrollPane)
                     .addGroup(chatPanelLayout.createSequentialGroup()
                         .addComponent(toWhomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                         .addComponent(groupIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -370,6 +387,7 @@ public class AppChatView extends javax.swing.JFrame {
     private javax.swing.JPanel inputBoxPanel;
     private javax.swing.JLayeredPane menuLayeredPane;
     private javax.swing.JPanel menuPanel;
+    private javax.swing.JLabel panelStatusLabel;
     private javax.swing.JButton sendMessageButton;
     private javax.swing.JPanel showChatPanel;
     private javax.swing.JButton showChatsButton;
@@ -384,6 +402,7 @@ public class AppChatView extends javax.swing.JFrame {
     private javax.swing.JScrollPane showUsersScrollPane;
     private javax.swing.JLabel toWhomLabel;
     private javax.swing.JTextField typedMessageTextField;
+    private javax.swing.JButton uploadButton;
     private javax.swing.JPanel userInfoPanel;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JPanel usersPanel;
@@ -495,19 +514,19 @@ public class AppChatView extends javax.swing.JFrame {
         groupsPanel.setVisible(false);
         usersPanel.setVisible(false);
         chatsPanel.setVisible(true);
-        // them details
+        panelStatusLabel.setText("Messages");
     }
     public void switchToGroups() {
         chatsPanel.setVisible(false);
         usersPanel.setVisible(false);
         groupsPanel.setVisible(true);
-        // them details
+        panelStatusLabel.setText("Groups");
     }
     public void switchToUsers() {
         chatsPanel.setVisible(false);
         groupsPanel.setVisible(false);
         usersPanel.setVisible(true);
-        // them details
+        panelStatusLabel.setText("Online");
     }
     
     // Event Handlers
@@ -533,9 +552,30 @@ public class AppChatView extends javax.swing.JFrame {
         showUsersPanel.addMouseListener(listenForClick);
     }
     
+    public void addUploadButtonListener(ActionListener listenForClick) {
+        uploadButton.addActionListener(listenForClick);
+    }
     public void addSendMessageButtonListener(ActionListener listenForClick) {
         sendMessageButton.addActionListener(listenForClick);
     }
     
+    // Methods
+    public File openFileChooser() {
+        try {
+            javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+            fileChooser.setCurrentDirectory(new File("."));
+            int result = fileChooser.showDialog(this, "Upload");
+            
+            if (result==javax.swing.JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile().getAbsoluteFile();
+                return selectedFile;
+            } else if (result==javax.swing.JFileChooser.CANCEL_OPTION) {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Error from openFileChooser(): " + e.getMessage());
+        }
+        return null;
+    }
     
 }

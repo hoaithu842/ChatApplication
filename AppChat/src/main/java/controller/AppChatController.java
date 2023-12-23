@@ -5,6 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import model.AppChatModel;
 import model.component.GroupInformation;
@@ -49,6 +54,7 @@ public class AppChatController {
         theView.prepareChats(theModel.getHistoryChatUsers());
         theView.prepareGroups(theModel.getHistoryChatGroups());
         theView.prepareUsers(onlineUsers);
+        theView.switchToChats();
     }
     
     // Methods for SignUp/LogIn
@@ -108,6 +114,34 @@ public class AppChatController {
             theView.updateChat(msgModel);
         }
     }
+    public void receivePrivateFile(MessageModel msgModel) {
+        Path targetDirectory = Path.of(".");
+
+        try {
+            Files.createDirectories(targetDirectory);
+            Path targetFile = targetDirectory.resolve(msgModel.getFile().getName());
+            Files.write(targetFile.toAbsolutePath(), Files.readAllBytes(msgModel.getFile().toPath()), StandardOpenOption.CREATE);
+
+            theView.displayMessage("Received file from user " + msgModel.getFrom() + " at: " + targetFile.toAbsolutePath());
+            System.out.println("File data successfully written to: " + targetFile.toAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void receiveGroupFile(MessageModel msgModel) {
+        Path targetDirectory = Path.of(".");
+
+        try {
+            Files.createDirectories(targetDirectory);
+            Path targetFile = targetDirectory.resolve(msgModel.getFile().getName());
+            Files.write(targetFile.toAbsolutePath(), Files.readAllBytes(msgModel.getFile().toPath()), StandardOpenOption.CREATE);
+
+            theView.displayMessage("Received file from group ID" + msgModel.getTo() + " at: " + targetFile.toAbsolutePath());
+            System.out.println("File data successfully written to: " + targetFile.toAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void updateOnlineUser(String username) {
         theView.updateUser(username);
     }
@@ -143,6 +177,7 @@ public class AppChatController {
         theView.addShowUsersPanelMouseListener(new ShowUsersPanelMouseListener());
         
         theView.addSendMessageButtonListener(new SendMessageButtonListener());
+        theView.addUploadButtonListener(new UploadButtonListener());
     }
     
     // Event Handlers for theLogInView
@@ -292,10 +327,10 @@ public class AppChatController {
             String to = theView.getToWhomLabel().getText();
             String content = theView.getTypedMessageTextField().getText();
             theView.getTypedMessageTextField().setText("");
-            if (to.equals("")) {
-                theView.displayMessage("Invalid user!");
+            if (to.equals("") || content.isEmpty() || content.isBlank()) {
+                theView.displayMessage("Invalid user or message!");
+                return;
             }
-//            if (theView.isShowGroupsOpening()) { // phai la ID != ""
             if (!theView.getGroupIdLabel().getText().isEmpty()) {   
                 to = theView.getGroupIdLabel().getText();
                 MessageModel msgModel = new MessageModel(from, to, content);
@@ -308,7 +343,31 @@ public class AppChatController {
             }
         }
     }
-    
+    class UploadButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            File file = theView.openFileChooser();
+            if (file!=null) {
+                theView.displayMessage("File sent!");
+                String from = theModel.getUsername();
+                String to = theView.getToWhomLabel().getText();
+                theView.getTypedMessageTextField().setText("");
+                if (to.equals("")) {
+                    theView.displayMessage("Invalid user!");
+                }
+                if (!theView.getGroupIdLabel().getText().isEmpty()) {   
+                    to = theView.getGroupIdLabel().getText();
+                    MessageModel msgModel = new MessageModel(from, to, file);
+                    theModel.sendFileGroupChat(msgModel);
+                    theView.switchToGroups();
+                } else {
+                    MessageModel msgModel = new MessageModel(from, to, file);
+                    theModel.sendFilePrivateChat(msgModel);
+                    theView.switchToChats();
+            }
+            }
+        }
+    }
     // Methods to create group
     public void createGroup(ArrayList<String> totalUsers) {
         theCreateGroupView.prepareList(totalUsers);

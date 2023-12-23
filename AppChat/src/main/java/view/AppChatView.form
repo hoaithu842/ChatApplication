@@ -140,13 +140,15 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                       <Component id="showChatsButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="showGroupsButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="showUsersButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="panelStatusLabel" min="-2" pref="68" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -155,6 +157,10 @@
                   <Component id="showUsersButton" min="-2" pref="32" max="-2" attributes="0"/>
                   <Component id="showGroupsButton" min="-2" max="-2" attributes="0"/>
                   <Component id="showChatsButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="panelStatusLabel" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -220,6 +226,17 @@
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[32, 32]"/>
                 </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="panelStatusLabel">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="12" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="0" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Messages"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -448,7 +465,7 @@
                       <Component id="showMessageScrollPane" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="toWhomLabel" min="-2" pref="640" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="48" max="32767" attributes="0"/>
                           <Component id="groupIdLabel" min="-2" pref="50" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -500,8 +517,10 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="typedMessageTextField" min="-2" pref="450" max="-2" attributes="0"/>
-                      <EmptySpace pref="210" max="32767" attributes="0"/>
+                      <Component id="typedMessageTextField" min="-2" pref="550" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="uploadButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="sendMessageButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -511,9 +530,10 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sendMessageButton" alignment="3" max="32767" attributes="0"/>
+                          <Component id="uploadButton" alignment="3" max="32767" attributes="0"/>
                           <Component id="typedMessageTextField" max="32767" attributes="0"/>
-                          <Component id="sendMessageButton" pref="38" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -526,6 +546,11 @@
             <Component class="javax.swing.JButton" name="sendMessageButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Send"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="uploadButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Upload"/>
               </Properties>
             </Component>
           </SubComponents>

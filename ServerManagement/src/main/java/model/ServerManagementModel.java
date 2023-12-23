@@ -29,6 +29,8 @@ public class ServerManagementModel {
     final int TOTAL_USERS = 3;
     final int CREATE_GROUP = 4;
     final int GROUP_MESSAGE = 5;
+    final int PRIVATE_FILE = 6;
+    final int GROUP_FILE = 7;
     
     public ServerManagementModel() {
         port = DEFAULT_PORT;
@@ -210,6 +212,40 @@ public class ServerManagementModel {
                                         oos.flush();
 
                                         System.out.println("Sent group message!");
+                                    }
+                                }
+                            } else {
+                                continue; //notify
+                            }
+                        }
+                        case PRIVATE_FILE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+
+                            String from = msgModel.getFrom();
+                            String to = msgModel.getTo();
+
+                            if (userData.containsKey(to)) {
+                                Socket item = clientManager.getReceiver(to);
+                                ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+                                oos.writeObject(pkg);
+                                oos.flush();
+                            } else {
+                                continue; //notify
+                            }
+                        }
+                        case GROUP_FILE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            
+                            String from = msgModel.getFrom();
+                            int to = Integer.parseInt(msgModel.getTo());
+                            
+                            if (groupData.containsKey(to)) {
+                                for (String member : groupData.get(to).getGroupMembers()) {
+                                    if (!member.equals(from) && clientManager.containsClient(member)) {
+                                        Socket item = clientManager.getReceiver(member);
+                                        ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+                                        oos.writeObject(pkg);
+                                        oos.flush();
                                     }
                                 }
                             } else {
