@@ -27,6 +27,10 @@ public class ClientManager {
         clientSocket.put(username, socket);
     }
     
+    void removeClient(String username) {
+        clientSocket.remove(username);
+    }
+    
     public Socket getReceiver(String username) {
         return clientSocket.get(username);
     }

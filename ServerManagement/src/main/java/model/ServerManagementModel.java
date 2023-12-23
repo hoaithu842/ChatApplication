@@ -56,9 +56,8 @@ public class ServerManagementModel implements Serializable {
             IP = InetAddress.getLocalHost();
             return IP.getHostAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            return "localhost";
         }
-        return "localhost";
     }
     public ClientManager getClientManager() {
         return clientManager;
@@ -116,7 +115,11 @@ public class ServerManagementModel implements Serializable {
                         
                         if (validUsername(username).equals("true")) {
                             if (method.equals("login")) {
-                                sendMsg.add("true");
+                                if (clientManager.containsClient(username)) {
+                                    sendMsg.add("false");
+                                } else {
+                                    sendMsg.add("true");
+                                }
                                 sendMsg.add(validPassword(username, password));
                             } else if (method.equals("signup")) {
                                 sendMsg.add("false");
@@ -274,16 +277,11 @@ public class ServerManagementModel implements Serializable {
                                 continue; //notify
                             }
                         }
-                        
-
-    //                        default -> {
-    //                            continue;
-    //                        }
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Error from ListeningThread: " + e.getMessage());
-                System.out.println(e.getStackTrace());
+                clientManager.removeClient(username);
+                theController.reloadConnectionTree();
             }
         }
     }

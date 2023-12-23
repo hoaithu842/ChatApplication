@@ -475,16 +475,13 @@ public class AppChatView extends javax.swing.JFrame {
     }
 
     public void prepareChat(HashSet<MessageModel> msgModels) {
-        System.out.println("1. Clear all chat!");
         showChatPanel.removeAll();
         if (msgModels == null) {
             showChatPanel.revalidate();
             showChatPanel.repaint();
             return;
         }
-        System.out.println("Not empty");
         for (MessageModel msgModel : msgModels) {
-            System.out.println(msgModel.getContent());
             updateChat(msgModel);
         }
         showChatPanel.revalidate();
@@ -494,11 +491,9 @@ public class AppChatView extends javax.swing.JFrame {
     public void updateChat(MessageModel msgModel) {
         MessageItem newMsg = new MessageItem(msgModel.getFrom(), msgModel.getContent());
         if (usernameLabel.getText().equals(msgModel.getFrom())) {
-            System.out.println("username = from -> la nguoi gui -> RIGHT_ALIGNMENT");
             newMsg.setAlignmentX(Component.RIGHT_ALIGNMENT);
             showChatPanel.add(newMsg);
         } else {
-            System.out.println("username = to -> la nguoi nhan -> LEFT_ALIGNMENT");
             newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
             showChatPanel.add(newMsg);
         }
