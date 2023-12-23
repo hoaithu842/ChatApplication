@@ -12,6 +12,7 @@ public class SocketPackage implements Serializable {
     Integer groupID;
     MessageModel msgModel;
     String newOnlineUser;
+    GroupInformation newGroup;
     ArrayList<String> totalUsers;
 
     public SocketPackage(int code) {
@@ -41,6 +42,10 @@ public class SocketPackage implements Serializable {
     public Integer getGroupID() {
         return groupID;
     }
+    
+    public GroupInformation getNewGroup() {
+        return newGroup;
+    }
 
     public MessageModel getMessageModel() {
         return msgModel;
@@ -60,5 +65,9 @@ public class SocketPackage implements Serializable {
     
     public void setGroupID(Integer ID) {
         this.groupID = ID;
+    }
+    
+    public void setNewGroup(GroupInformation newGroup) {
+        this.newGroup = newGroup;
     }
 }

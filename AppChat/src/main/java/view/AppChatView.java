@@ -6,7 +6,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashSet;
+import model.component.GroupInformation;
 import model.component.MessageModel;
+import view.component.GroupItem;
 import view.component.MessageItem;
 
 /**
@@ -55,6 +57,7 @@ public class AppChatView extends javax.swing.JFrame {
         sendMessageButton = new javax.swing.JButton();
         showMessageScrollPane = new javax.swing.JScrollPane();
         showChatPanel = new javax.swing.JPanel();
+        groupIdLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("App Chat - 21127176 - 21KTPM1");
@@ -310,20 +313,28 @@ public class AppChatView extends javax.swing.JFrame {
         showChatPanel.setLayout(new javax.swing.BoxLayout(showChatPanel, javax.swing.BoxLayout.PAGE_AXIS));
         showMessageScrollPane.setViewportView(showChatPanel);
 
+        groupIdLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+
         javax.swing.GroupLayout chatPanelLayout = new javax.swing.GroupLayout(chatPanel);
         chatPanel.setLayout(chatPanelLayout);
         chatPanelLayout.setHorizontalGroup(
             chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(toWhomLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(inputBoxPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE)
             .addGroup(chatPanelLayout.createSequentialGroup()
-                .addComponent(showMessageScrollPane)
+                .addGroup(chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(showMessageScrollPane)
+                    .addGroup(chatPanelLayout.createSequentialGroup()
+                        .addComponent(toWhomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(groupIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         chatPanelLayout.setVerticalGroup(
             chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(chatPanelLayout.createSequentialGroup()
-                .addComponent(toWhomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(chatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(toWhomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(groupIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showMessageScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -353,6 +364,7 @@ public class AppChatView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel chatPanel;
     private javax.swing.JPanel chatsPanel;
+    private javax.swing.JLabel groupIdLabel;
     private javax.swing.JPanel groupsPanel;
     private javax.swing.JPanel infoPanel;
     private javax.swing.JPanel inputBoxPanel;
@@ -396,6 +408,10 @@ public class AppChatView extends javax.swing.JFrame {
         return toWhomLabel;
     }
     
+    public javax.swing.JLabel getGroupIdLabel() {
+        return groupIdLabel;
+    }
+    
     public javax.swing.JTextField getTypedMessageTextField() {
         return typedMessageTextField;
     }
@@ -417,9 +433,10 @@ public class AppChatView extends javax.swing.JFrame {
         showChatsPanel.revalidate();
         showChatsPanel.repaint();
     }
-    public void prepareGroups(ArrayList<Integer> msgWithGroups) {
-        for (Integer groupID : msgWithGroups) {
-            showGroupsPanel.add(new ChatItem(groupID.toString()), 0);
+    public void prepareGroups(ArrayList<GroupInformation> groups) {
+        showGroupsPanel.removeAll();
+        for (GroupInformation groupInfo : groups) {
+            showGroupsPanel.add(new GroupItem(Integer.toString(groupInfo.getID()), groupInfo.getGroupName()), 0);
         }
         showGroupsPanel.revalidate();
         showGroupsPanel.repaint();
@@ -461,7 +478,7 @@ public class AppChatView extends javax.swing.JFrame {
             System.out.println("username = from -> la nguoi gui -> RIGHT_ALIGNMENT");
             newMsg.setAlignmentX(Component.RIGHT_ALIGNMENT);
             showChatPanel.add(newMsg);
-        } else if (usernameLabel.getText().equals(msgModel.getTo())) {
+        } else {
             System.out.println("username = to -> la nguoi nhan -> LEFT_ALIGNMENT");
             newMsg.setAlignmentX(Component.LEFT_ALIGNMENT);
             showChatPanel.add(newMsg);

@@ -28,6 +28,7 @@ public class ServerManagementModel {
     final int UPDATE_ONLINE = 2;
     final int TOTAL_USERS = 3;
     final int CREATE_GROUP = 4;
+    final int GROUP_MESSAGE = 5;
     
     public ServerManagementModel() {
         port = DEFAULT_PORT;
@@ -140,15 +141,12 @@ public class ServerManagementModel {
                     ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                     SocketPackage pkg = (SocketPackage) ois.readObject();
 
-                    System.out.println("Server received from " + username + " code: " + pkg.getCode());
-
                     switch (pkg.getCode()) {
                         case PRIVATE_MESSAGE -> {
                             MessageModel msgModel = pkg.getMessageModel();
 
                             String from = msgModel.getFrom();
                             String to = msgModel.getTo();
-                            System.out.println("\t Content from " + from + " to " + to + ": " + msgModel.getContent());
 
                             if (userData.containsKey(to)) {
                                 userData.get(from).updateChat(to, msgModel);
@@ -156,11 +154,8 @@ public class ServerManagementModel {
 
                                 for (Socket item : clientManager.getReceiverSockets(from, to)) {
                                     ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
-
                                     oos.writeObject(pkg);
                                     oos.flush();
-
-                                    System.out.println("Sent!");
                                 }
                             } else {
                                 continue; //notify
@@ -173,8 +168,6 @@ public class ServerManagementModel {
 
                             oos.writeObject(pkg);
                             oos.flush();
-
-                            System.out.println("Sent totalUsers!");
                         }
                         case CREATE_GROUP -> {
                             String groupName = pkg.getNewOnlineUser(); // String obj represents groupName
@@ -183,22 +176,47 @@ public class ServerManagementModel {
                             int ID = groupData.size() + 1;
                             groupData.put(ID, new GroupInformation(ID, groupName, groupMembers));
                             
+                            pkg.setGroupID(ID);
+                            pkg.setNewGroup(groupData.get(ID));
+                            
                             for (String member : groupMembers) {
-                                userData.get(member).createGroup(ID);
+                                userData.get(member).createGroup(ID, groupData.get(ID));
                                 if (clientManager.containsClient(member)) {
                                     Socket socket = clientManager.getReceiver(member);
                                     ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-
-                                    pkg.setGroupID(ID);
+                                    
                                     oos.writeObject(pkg);
                                     oos.flush();
 
                                     System.out.println("Sent createGroup!");
                                 }
-                                
                             }
-                            // hien thi trong group
                         }
+                        case GROUP_MESSAGE -> {
+                            MessageModel msgModel = pkg.getMessageModel();
+                            
+                            String from = msgModel.getFrom();
+                            int to = Integer.parseInt(msgModel.getTo());
+                            System.out.println("\t Content from " + from + " to group " + to + ": " + msgModel.getContent());
+                            
+                            if (groupData.containsKey(to)) {
+                                groupData.get(to).updateGroupChat(msgModel);
+                                for (String member : groupData.get(to).getGroupMembers()) {
+                                    if (clientManager.containsClient(member)) {
+                                        Socket item = clientManager.getReceiver(member);
+                                        ObjectOutputStream oos = new ObjectOutputStream(item.getOutputStream());
+
+                                        oos.writeObject(pkg);
+                                        oos.flush();
+
+                                        System.out.println("Sent group message!");
+                                    }
+                                }
+                            } else {
+                                continue; //notify
+                            }
+                        }
+                        
 
     //                        default -> {
     //                            continue;

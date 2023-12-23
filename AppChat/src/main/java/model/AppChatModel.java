@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import model.component.GroupInformation;
 import model.component.MessageModel;
 import model.component.SocketPackage;
 import model.component.UserInformation;
@@ -23,6 +24,7 @@ public class AppChatModel {
     final int UPDATE_ONLINE = 2;
     final int TOTAL_USERS = 3;
     final int CREATE_GROUP = 4;
+    final int GROUP_MESSAGE = 5;
     
     Socket socket;
     
@@ -37,10 +39,13 @@ public class AppChatModel {
     public HashSet<MessageModel> getMessagesWithUser(String username) {
         return clientInfo.getMessagesWithUser(username);
     }
+    public HashSet<MessageModel> getMessagesWithGroup(String groupId) {
+        return clientInfo.getMessagesWithGroup(Integer.valueOf(groupId));
+    }
     public ArrayList<String> getHistoryChatUsers() {
         return clientInfo.getHistoryChatUsers();
     }
-    public ArrayList<Integer> getHistoryChatGroups() {
+    public ArrayList<GroupInformation> getHistoryChatGroups() {
         return clientInfo.getHistoryChatGroups();
     }
     // Setters
@@ -49,11 +54,12 @@ public class AppChatModel {
     }
     public void updateChat(String with, MessageModel msgModel) {
         clientInfo.updateChat(with, msgModel);
-        theController.prepareChats();
     }
-    public void updateGroups(int ID) {
-        clientInfo.createGroup(ID);
-        // prepare Group?
+    public void updateGroupChat(int ID, MessageModel msgModel) {
+        clientInfo.updateGroupChat(ID, msgModel);
+    }
+    public void updateCreateGroups(int ID, GroupInformation newGroup) {
+        clientInfo.createGroup(ID, newGroup);
     }
     //  Methods for authorization
     public boolean authorize(String username, String password, String method) {
@@ -112,31 +118,28 @@ public class AppChatModel {
                     ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                     SocketPackage pkg = (SocketPackage) ois.readObject();
 
-                    System.out.println(clientInfo.getUsername() + " received from server code: " + pkg.getCode());
-
                     switch (pkg.getCode()) {
                             case PRIVATE_MESSAGE -> {
                                 MessageModel msgModel = pkg.getMessageModel();
-
-                                System.out.println("\t Content from " + msgModel.getFrom() + " to " + msgModel.getTo() + ": " + msgModel.getContent());
                                 theController.updateChat(msgModel);
                             }
                             case UPDATE_ONLINE -> {
                                 String newOnlineUser = pkg.getNewOnlineUser();
-
-                                System.out.println("\t New online user: " + newOnlineUser);
                                 theController.updateOnlineUser(newOnlineUser);
                             }
                             case TOTAL_USERS -> {
                                 ArrayList<String> totalUsers = pkg.getTotalUsers();
-                                System.out.println("So luong user: " + totalUsers.size());
                                 theController.createGroup(totalUsers);
                             }
                             case CREATE_GROUP -> {
                                 int ID = pkg.getGroupID();
-//                                clientInfo.createGroup(ID);
-                                System.out.println("Created group with ID: " + ID);
-                                theController.updateGroups(ID);
+                                GroupInformation newGroup = pkg.getNewGroup();
+                                theController.updateCreateGroups(ID, newGroup);
+                            }
+                            case GROUP_MESSAGE -> {
+                                MessageModel msgModel = pkg.getMessageModel();
+                                theController.updateGroupChat(msgModel);
+//                                System.out.println("\t Content from " + msgModel.getFrom() + "to group ID" + msgModel.getTo());
                             }
     //                        default -> {
     //                            continue;
@@ -192,6 +195,14 @@ public class AppChatModel {
         }
     }
     public void sendMessageGroupChat(MessageModel msgModel) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(new SocketPackage(GROUP_MESSAGE, msgModel));
+            oos.flush();
+        } catch (Exception e) {
+            System.out.println("Error from sendMessageGroupChat: " + e.getMessage());
+        }
     }
     public void sendTotalUsersRequest() {
         ObjectOutputStream oos = null;

@@ -13,13 +13,13 @@ public class UserInformation implements Serializable {
     private String username;
     private String password;
     public LinkedHashMap<String, HashSet<MessageModel>> historyPrivateChat;
-    public LinkedHashMap<Integer, HashSet<MessageModel>> historyGroupChat;
+    public LinkedHashMap<Integer, GroupInformation> groupChat;
     
     public UserInformation(String username, String password) {        
         this.username = username;
         this.password = password;
         this.historyPrivateChat = new LinkedHashMap<>();
-        this.historyGroupChat = new LinkedHashMap<>();
+        this.groupChat = new LinkedHashMap<>();
     }
 
     public String getUsername() {
@@ -30,8 +30,8 @@ public class UserInformation implements Serializable {
         return new ArrayList<>(historyPrivateChat.keySet());
     }
     
-    public ArrayList<Integer> getHistoryChatGroups() {
-        return new ArrayList<>(historyGroupChat.keySet());
+    public ArrayList<GroupInformation> getHistoryChatGroups() {
+        return new ArrayList<>(groupChat.values());
     }
     
     public HashSet<MessageModel> getMessagesWithUser(String username) {
@@ -41,12 +41,19 @@ public class UserInformation implements Serializable {
         return null;
     }
     
+    public HashSet<MessageModel> getMessagesWithGroup(Integer groupId) {
+        if (groupChat.containsKey(groupId)) {
+            return groupChat.get(groupId).historyGroupChat;
+        }
+        return null;
+    }
+    
     public boolean passwordMatching(String password) {
         return this.password.equals(password);
     }
 
-    public void createGroup(Integer ID) {
-        historyGroupChat.put(ID, new HashSet<>());
+    public void createGroup(Integer ID, GroupInformation newGroup) {
+        groupChat.put(ID, newGroup);
     }
     
     public void updateChat(String with, MessageModel msgModel) {
@@ -56,5 +63,11 @@ public class UserInformation implements Serializable {
         HashSet<MessageModel> msgModels = historyPrivateChat.get(with);
         msgModels.add(msgModel);
         historyPrivateChat.put(with, msgModels);
+    }
+    
+    public void updateGroupChat(int ID, MessageModel msgModel) {
+        GroupInformation groupInfo = groupChat.get(ID);
+        groupInfo.updateGroupChat(msgModel);
+        groupChat.put(ID, groupInfo);
     }
 }

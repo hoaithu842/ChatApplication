@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import model.AppChatModel;
+import model.component.GroupInformation;
 import model.component.MessageModel;
 import view.AppChatView;
 import view.CreateGroupView;
@@ -14,6 +15,7 @@ import view.JoinServerView;
 import view.LogInView;
 import view.SignUpView;
 import view.component.ChatItem;
+import view.component.GroupItem;
 
 /**
  *
@@ -44,17 +46,9 @@ public class AppChatController {
     }
     
     public void prepareUIComponents(ArrayList<String> onlineUsers) {
-        prepareChats();
-        prepareGroups();
-        theView.prepareUsers(onlineUsers);
-    }
-    
-    public void prepareChats() {
         theView.prepareChats(theModel.getHistoryChatUsers());
-    }
-    
-    public void prepareGroups() {
         theView.prepareGroups(theModel.getHistoryChatGroups());
+        theView.prepareUsers(onlineUsers);
     }
     
     // Methods for SignUp/LogIn
@@ -92,6 +86,8 @@ public class AppChatController {
         }
 
         theModel.updateChat(with, msgModel);
+        theView.prepareChats(theModel.getHistoryChatUsers());
+
         if (theModel.getUsername().equals(from) && theView.getToWhomLabel().getText().equals(to)){
             theView.updateChat(msgModel);
         }
@@ -101,12 +97,24 @@ public class AppChatController {
         }
     }
     
+    public void updateGroupChat(MessageModel msgModel) {
+//        String from = msgModel.getFrom();
+        int to = Integer.parseInt(msgModel.getTo());
+        
+        theModel.updateGroupChat(to, msgModel);
+        theView.prepareGroups(theModel.getHistoryChatGroups());
+        
+        if (theView.getGroupIdLabel().getText().equals(Integer.toString(to))) {
+            theView.updateChat(msgModel);
+        }
+    }
     public void updateOnlineUser(String username) {
         theView.updateUser(username);
     }
     
-    public void updateGroups(int ID) {
-        theModel.updateGroups(ID);
+    public void updateCreateGroups(int ID, GroupInformation newGroup) {
+        theModel.updateCreateGroups(ID, newGroup);
+        theView.prepareGroups(theModel.getHistoryChatGroups());
     }
     // Event Handlers
     final void addEventHandlers() {
@@ -250,7 +258,7 @@ public class AppChatController {
             Component clickedComponent = theView.getShowChatsPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
-                System.out.println("Clicked!");
+                theView.getGroupIdLabel().setText("");
                 theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
@@ -259,8 +267,10 @@ public class AppChatController {
         @Override
         public void mouseClicked(MouseEvent event) {
             Component clickedComponent = theView.getShowGroupsPanel().getComponentAt(event.getPoint());
-            if (clickedComponent instanceof ChatItem chatItem) {
-                theView.getToWhomLabel().setText(chatItem.getName());
+            if (clickedComponent instanceof GroupItem groupItem) {
+                theView.getToWhomLabel().setText(groupItem.getName());
+                theView.getGroupIdLabel().setText(groupItem.getGroupId());
+                theView.prepareChat(theModel.getMessagesWithGroup(groupItem.getGroupId()));
             }
         }
     }
@@ -270,7 +280,7 @@ public class AppChatController {
             Component clickedComponent = theView.getShowUsersPanel().getComponentAt(event.getPoint());
             if (clickedComponent instanceof ChatItem chatItem) {
                 theView.getToWhomLabel().setText(chatItem.getName());
-                System.out.println("Clicked!");
+                theView.getGroupIdLabel().setText("");
                 theView.prepareChat(theModel.getMessagesWithUser(chatItem.getName()));
             }
         }
@@ -285,11 +295,14 @@ public class AppChatController {
             if (to.equals("")) {
                 theView.displayMessage("Invalid user!");
             }
-            MessageModel msgModel = new MessageModel(from, to, content);
-            if (theView.isShowGroupsOpening()) {
+//            if (theView.isShowGroupsOpening()) { // phai la ID != ""
+            if (!theView.getGroupIdLabel().getText().isEmpty()) {   
+                to = theView.getGroupIdLabel().getText();
+                MessageModel msgModel = new MessageModel(from, to, content);
                 theModel.sendMessageGroupChat(msgModel);
                 theView.switchToGroups();
             } else {
+                MessageModel msgModel = new MessageModel(from, to, content);
                 theModel.sendMessagePrivateChat(msgModel);
                 theView.switchToChats();
             }

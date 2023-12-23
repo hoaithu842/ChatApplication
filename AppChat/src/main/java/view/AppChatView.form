@@ -442,10 +442,16 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="toWhomLabel" max="32767" attributes="0"/>
               <Component id="inputBoxPanel" alignment="1" pref="744" max="32767" attributes="0"/>
-              <Group type="102" alignment="0" attributes="0">
-                  <Component id="showMessageScrollPane" max="32767" attributes="0"/>
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="showMessageScrollPane" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="toWhomLabel" min="-2" pref="640" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="groupIdLabel" min="-2" pref="50" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -453,7 +459,10 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="toWhomLabel" min="-2" pref="50" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="toWhomLabel" min="-2" pref="50" max="-2" attributes="0"/>
+                      <Component id="groupIdLabel" min="-2" pref="25" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="showMessageScrollPane" min="-2" pref="488" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -537,6 +546,11 @@
             </Container>
           </SubComponents>
         </Container>
+        <Component class="javax.swing.JLabel" name="groupIdLabel">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>
