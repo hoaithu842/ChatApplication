@@ -2,6 +2,8 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import model.ServerManagementModel;
 import view.ServerManagementView;
 
@@ -19,6 +21,7 @@ public class ServerManagementController {
         
         this.theView.addStartServerButtonListener(new StartServerButtonListener());
         this.theView.setIPLabel(theModel.getIP());
+        this.theView.addServerManagementWindowListener(new ServerManagementWindowListener());
     }
     
     public void reloadConnectionTree() {
@@ -41,5 +44,25 @@ public class ServerManagementController {
             }
             theModel.createConnection(port);
         }
+    }
+    
+    class ServerManagementWindowListener implements WindowListener {
+        @Override
+        public void windowClosing(WindowEvent e) {
+            // close socket
+            theModel.saveServerData();
+        }
+        @Override
+        public void windowOpened(WindowEvent e) {}
+        @Override
+        public void windowClosed(WindowEvent e) {}
+        @Override
+        public void windowIconified(WindowEvent e) {}
+        @Override
+        public void windowDeiconified(WindowEvent e) {}
+        @Override
+        public void windowActivated(WindowEvent e) {}
+        @Override
+        public void windowDeactivated(WindowEvent e) {}
     }
 }

@@ -1,3 +1,4 @@
+controller\ServerManagementController$ServerManagementWindowListener.class
 model\ServerManagementModel$AuthorizingThread.class
 controller\ServerManagementController$StartServerButtonListener.class
 model\ServerManagementModel$ConnectingThread.class

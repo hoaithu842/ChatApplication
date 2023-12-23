@@ -17,7 +17,7 @@ import model.component.SocketPackage;
  *
  * @author hoaithu842
  */
-public class ServerManagementModel {
+public class ServerManagementModel implements Serializable {
     private final HashMap<String, UserInformation> userData;
     private final HashMap<Integer, GroupInformation> groupData;
     ClientManager clientManager;
@@ -41,6 +41,14 @@ public class ServerManagementModel {
         clientManager = new ClientManager();
         openPortToAuthorize();
     }
+    public void saveServerData() {
+        try {
+            try (FileOutputStream fos = new FileOutputStream("server.dat"); ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                oos.writeObject(this);
+            }
+        } catch (IOException e) {
+        }
+    }
     // Getters
     public String getIP() {
         InetAddress IP;
@@ -59,8 +67,10 @@ public class ServerManagementModel {
         return port;
     }
     // Setters
-    public void refreshClientManager() {
+    public void refresh() {
         clientManager = new ClientManager();
+        port = DEFAULT_PORT;
+        openPortToAuthorize();
     }
     public void setController(ServerManagementController theController) {
         this.theController = theController;
